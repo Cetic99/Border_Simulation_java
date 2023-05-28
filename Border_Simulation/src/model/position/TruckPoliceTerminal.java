@@ -1,4 +1,4 @@
-package model.terminal;
+package model.position;
 
 public class TruckPoliceTerminal extends PoliceTerminal {
 

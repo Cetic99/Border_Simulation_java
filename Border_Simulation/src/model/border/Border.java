@@ -1,6 +1,7 @@
 package model.border;
 
 import javafx.concurrent.Task;
+import model.position.*;
 import model.vehicle.BusVehicle;
 import model.vehicle.PersonalVehicle;
 import model.vehicle.TruckVehicle;
@@ -20,10 +21,45 @@ public class Border extends Task<Vehicle>{
 	
 	private Queue<Vehicle> vehicles = null;
 	
+	private List<Position> linePositions = new ArrayList<>();
+	private List<Position> carBusPoliceTerminals = new ArrayList<>();
+	private CarBusCustomsTerminal carBusCustomsTerminal = new CarBusCustomsTerminal();
+	private TruckPoliceTerminal truckPoliceTerminal = new TruckPoliceTerminal();
+	private TruckCustomsTerminal truckCustomsTerminal = new TruckCustomsTerminal();
+	
+	/*------------ Constructors --------------------*/
 	public Border() {
-		
+		/*
+		 * Creating positions
+		 */
+		this.createPositions();
+		/*
+		 * Creating vehicles
+		 */
 		this.createVehicles();
+		
+		this.notifyVehiclesAboutPositions();
 
+	}
+	/*----------------------------------------------*/
+	
+	private void notifyVehiclesAboutPositions() {
+		vehicles.stream().forEach(e -> {
+			e.setCarBusCustomsTerminal(carBusCustomsTerminal);
+			e.setCarBusPoliceTerminals(carBusPoliceTerminals);
+			e.setLinePositions(linePositions);
+			e.setTruckCustomsTerminal(truckCustomsTerminal);
+			e.setTruckPoliceTerminal(truckPoliceTerminal);
+		});
+	}
+	
+	private void createPositions() {
+		for(int i = 0;i<5; i++) {
+			linePositions.add(new LinePosition());
+		}
+		for(int i = 0;i<2; i++) {
+			carBusPoliceTerminals.add(new CarBusPoliceTerminal());
+		}
 	}
 	
 	private void createVehicles() {
@@ -68,5 +104,77 @@ public class Border extends Task<Vehicle>{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	/**
+	 * @return the linePositions
+	 */
+	public List<Position> getLinePositions() {
+		return linePositions;
+	}
+
+	/**
+	 * @param linePositions the linePositions to set
+	 */
+	public void setLinePositions(List<Position> linePositions) {
+		this.linePositions = linePositions;
+	}
+
+	/**
+	 * @return the carBusPoliceTerminals
+	 */
+	public List<Position> getCarBusPoliceTerminals() {
+		return carBusPoliceTerminals;
+	}
+
+	/**
+	 * @param carBusPoliceTerminals the carBusPoliceTerminals to set
+	 */
+	public void setCarBusPoliceTerminals(List<Position> carBusPoliceTerminals) {
+		this.carBusPoliceTerminals = carBusPoliceTerminals;
+	}
+
+	/**
+	 * @return the carBusCustomsTerminal
+	 */
+	public CarBusCustomsTerminal getCarBusCustomsTerminal() {
+		return carBusCustomsTerminal;
+	}
+
+	/**
+	 * @param carBusCustomsTerminal the carBusCustomsTerminal to set
+	 */
+	public void setCarBusCustomsTerminal(CarBusCustomsTerminal carBusCustomsTerminal) {
+		this.carBusCustomsTerminal = carBusCustomsTerminal;
+	}
+
+	/**
+	 * @return the truckPoliceTerminal
+	 */
+	public TruckPoliceTerminal getTruckPoliceTerminal() {
+		return truckPoliceTerminal;
+	}
+
+	/**
+	 * @param truckPoliceTerminal the truckPoliceTerminal to set
+	 */
+	public void setTruckPoliceTerminal(TruckPoliceTerminal truckPoliceTerminal) {
+		this.truckPoliceTerminal = truckPoliceTerminal;
+	}
+
+	/**
+	 * @return the truckCustomsTerminal
+	 */
+	public TruckCustomsTerminal getTruckCustomsTerminal() {
+		return truckCustomsTerminal;
+	}
+
+	/**
+	 * @param truckCustomsTerminal the truckCustomsTerminal to set
+	 */
+	public void setTruckCustomsTerminal(TruckCustomsTerminal truckCustomsTerminal) {
+		this.truckCustomsTerminal = truckCustomsTerminal;
+	}
+
+
 
 }

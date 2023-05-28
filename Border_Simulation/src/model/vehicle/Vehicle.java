@@ -1,6 +1,8 @@
 package model.vehicle;
 
+
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javafx.scene.image.Image;
@@ -10,14 +12,22 @@ import java.util.Random;
 import model.passenger.BusPassenger;
 import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
-import model.terminal.BorderTerminal;
+import model.position.CarBusCustomsTerminal;
+import model.position.Position;
+import model.position.TruckCustomsTerminal;
+import model.position.TruckPoliceTerminal;
 
 public abstract class Vehicle {
 
 	private Set<? extends Passenger> passengers;
 	private int capacity = 0;
 	private Image image = null;
-	private BorderTerminal terminal = null;
+	
+	private List<Position> linePositions;
+	private List<Position> carBusPoliceTerminals;
+	private CarBusCustomsTerminal carBusCustomsTerminal;
+	private TruckPoliceTerminal truckPoliceTerminal;
+	private TruckCustomsTerminal truckCustomsTerminal;
 
 	/*----------------- Constructors --------------------*/
 	public Vehicle(Set<? extends Passenger> passengers) {
@@ -104,15 +114,64 @@ public abstract class Vehicle {
 		this.image = image;
 	}
 	/**
-	 * @return the terminal
+	 * @return the linePositions
 	 */
-	public BorderTerminal getTerminal() {
-		return terminal;
+	public List<Position> getLinePositions() {
+		return linePositions;
 	}
 	/**
-	 * @param terminal the terminal to set
+	 * @param linePositions the linePositions to set
 	 */
-	public void setTerminal(BorderTerminal terminal) {
-		this.terminal = terminal;
+	public void setLinePositions(List<Position> linePositions) {
+		this.linePositions = linePositions;
 	}
+	/**
+	 * @return the carBusPoliceTerminals
+	 */
+	public List<Position> getCarBusPoliceTerminals() {
+		return carBusPoliceTerminals;
+	}
+	/**
+	 * @param carBusPoliceTerminals the carBusPoliceTerminals to set
+	 */
+	public void setCarBusPoliceTerminals(List<Position> carBusPoliceTerminals) {
+		this.carBusPoliceTerminals = carBusPoliceTerminals;
+	}
+	/**
+	 * @return the carBusCustomsTerminal
+	 */
+	public CarBusCustomsTerminal getCarBusCustomsTerminal() {
+		return carBusCustomsTerminal;
+	}
+	/**
+	 * @param carBusCustomsTerminal the carBusCustomsTerminal to set
+	 */
+	public void setCarBusCustomsTerminal(CarBusCustomsTerminal carBusCustomsTerminal) {
+		this.carBusCustomsTerminal = carBusCustomsTerminal;
+	}
+	/**
+	 * @return the truckPoliceTerminal
+	 */
+	public TruckPoliceTerminal getTruckPoliceTerminal() {
+		return truckPoliceTerminal;
+	}
+	/**
+	 * @param truckPoliceTerminal the truckPoliceTerminal to set
+	 */
+	public void setTruckPoliceTerminal(TruckPoliceTerminal truckPoliceTerminal) {
+		this.truckPoliceTerminal = truckPoliceTerminal;
+	}
+	/**
+	 * @return the truckCustomsTerminal
+	 */
+	public TruckCustomsTerminal getTruckCustomsTerminal() {
+		return truckCustomsTerminal;
+	}
+	/**
+	 * @param truckCustomsTerminal the truckCustomsTerminal to set
+	 */
+	public void setTruckCustomsTerminal(TruckCustomsTerminal truckCustomsTerminal) {
+		this.truckCustomsTerminal = truckCustomsTerminal;
+	}
+
 }
