@@ -1,12 +1,14 @@
 package model.position;
 
+import javafx.scene.image.ImageView;
 import model.vehicle.Vehicle;
 
 public class Position {
 	
 	private boolean taken = false;
 	private Vehicle vehicle;
-
+	private ImageView imView;
+	
 	/**
 	 * @return the vehicle
 	 */
@@ -33,5 +35,19 @@ public class Position {
 	 */
 	public void setTaken(boolean taken) {
 		this.taken = taken;
+	}
+
+	/**
+	 * @return the imView
+	 */
+	public ImageView getImView() {
+		return imView;
+	}
+
+	/**
+	 * @param imView the imView to set
+	 */
+	public void setImView(ImageView imView) {
+		this.imView = imView;
 	}
 }
