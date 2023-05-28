@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="482.0" prefWidth="342.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainController">
+   <children>
+      <ImageView fx:id="c1" fitHeight="42.0" fitWidth="46.0" layoutX="63.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p1" fitHeight="42.0" fitWidth="46.0" layoutX="63.0" layoutY="149.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2" fitHeight="42.0" fitWidth="46.0" layoutX="148.0" layoutY="149.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="pk" fitHeight="42.0" fitWidth="46.0" layoutX="227.0" layoutY="149.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="ck" fitHeight="42.0" fitWidth="46.0" layoutX="227.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="column0" fitHeight="42.0" fitWidth="46.0" layoutX="148.0" layoutY="228.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="column1" fitHeight="42.0" fitWidth="46.0" layoutX="148.0" layoutY="270.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="column2" fitHeight="42.0" fitWidth="46.0" layoutX="148.0" layoutY="312.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="column3" fitHeight="42.0" fitWidth="46.0" layoutX="148.0" layoutY="354.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="column4" fitHeight="42.0" fitWidth="46.0" layoutX="148.0" layoutY="396.0" pickOnBounds="true" preserveRatio="true" />
+   </children>
+</AnchorPane>
