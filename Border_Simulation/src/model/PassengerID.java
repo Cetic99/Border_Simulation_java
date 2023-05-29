@@ -1,15 +1,29 @@
 package model;
 
 import java.util.Objects;
+import java.util.Random;
+
 
 public class PassengerID {
 
 	private String name;
 	private String surname;
+	private boolean valid;
+	private static Random rand = new Random();
+	
 	
 	public PassengerID(String name, String surname) {
 		this.setName(name);
 		this.setSurname(surname);
+		this.createValidity();
+	}
+	
+	private void createValidity() {
+		if(rand.nextDouble() <= 0.03) {
+			this.valid= false;
+		}
+		else
+			this.valid= true;
 	}
 	/**
 	 * @return the name
@@ -49,6 +63,18 @@ public class PassengerID {
 			return false;
 		PassengerID other = (PassengerID) obj;
 		return Objects.equals(name, other.name) && Objects.equals(surname, other.surname);
+	}
+	/**
+	 * @return the valid
+	 */
+	public boolean isValid() {
+		return valid;
+	}
+	/**
+	 * @param valid the valid to set
+	 */
+	public void setValid(boolean valid) {
+		this.valid = valid;
 	}
 	
 }

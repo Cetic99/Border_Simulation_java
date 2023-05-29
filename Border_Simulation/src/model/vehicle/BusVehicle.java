@@ -31,6 +31,9 @@ public class BusVehicle extends Vehicle{
 		 * Setting image for Bus
 		 */
 		this.setImage(new Image("file:src/view/images/bus.jpg"));
+		
+		this.setCtTime(100);
+		this.setPtTime(100);
 	}
 	
 	public BusVehicle() {
@@ -46,8 +49,22 @@ public class BusVehicle extends Vehicle{
 		 * Setting image for Bus
 		 */
 		this.setImage(new Image("file:src/view/images/bus.jpg"));
+		
+		this.setCtTime(100);
+		this.setPtTime(100);
 	}
 	/*------------------------------------------*/
+	@Override
+	public void policeTerminalProcess() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void customsTerminalProcess() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	/**
 	 * @return the cargo
@@ -73,6 +90,7 @@ public class BusVehicle extends Vehicle{
 			}
 		});
 	}
+
 
 	
 }

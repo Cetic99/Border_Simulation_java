@@ -1,6 +1,5 @@
 package model.vehicle;
 
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,76 +16,180 @@ import model.position.CarBusCustomsTerminal;
 import model.position.Position;
 import model.position.TruckCustomsTerminal;
 import model.position.TruckPoliceTerminal;
+import java.util.concurrent.locks.*;
 
-public abstract class Vehicle extends Task<Position>{
+public abstract class Vehicle extends Task<Position> {
 
+	/*
+	 * Stores passengers in Vehicle
+	 */
 	private Set<? extends Passenger> passengers;
+	/*
+	 * Stores capacity of vehicle
+	 */
 	private int capacity = 0;
+	/*
+	 * Stores image that will be shown on GUI
+	 */
 	private Image image = null;
-	
+
+	/*
+	 * All positions on Border
+	 */
 	private List<Position> linePositions;
 	private List<Position> carBusPoliceTerminals;
 	private CarBusCustomsTerminal carBusCustomsTerminal;
 	private TruckPoliceTerminal truckPoliceTerminal;
 	private TruckCustomsTerminal truckCustomsTerminal;
-	
+
+	/*
+	 * Stores current position of Vehicle
+	 */
 	private Position currentPosition = null;
+	
+	/*
+	 * Used for locking positions(Line,Terminals)
+	 */
+	private Lock oldLock,newLock = null;
+	/*
+	 * Processing times at PoliceTerminal and CustomsTerminal
+	 */
+	private long ptTime,ctTime;
 
 	/*----------------- Constructors --------------------*/
 	public Vehicle(Set<? extends Passenger> passengers) {
 		this.passengers = passengers;
 	}
+
 	public Vehicle() {
-		
+
 	}
 	/*---------------------------------------------------*/
-	
-	
+
 	public void createPassengers() {
 		/**
 		 * Create passengers
 		 */
 		Set<Passenger> passengers = new HashSet<>();
 		Random rand = new Random();
-		int passengerCount = 1 + (int)rand.nextDouble()*(this.getCapacity() - 1);
-		
+		int passengerCount = 1 + (int) rand.nextDouble() * (this.getCapacity() - 1);
+
 		/**
 		 * Create driver
 		 */
 		passengers.add(new DriverPassenger());
-		if(this instanceof BusVehicle) {
-			for(int i = 1; i< passengerCount; i++) {
-				passengers.add(new BusPassenger()); 
+		if (this instanceof BusVehicle) {
+			for (int i = 1; i < passengerCount; i++) {
+				passengers.add(new BusPassenger());
+			}
+		} else {
+			for (int i = 1; i < passengerCount; i++) {
+				passengers.add(new Passenger());
 			}
 		}
-		else {
-			for(int i = 1; i< passengerCount; i++) {
-				passengers.add(new Passenger()); 
-			}
-		}
-		
+
 		this.setPassengers(passengers);
 	}
-	
+
 	/*
 	 * Thread method
 	 */
 	@Override
 	protected Position call() throws Exception {
 		// TODO Auto-generated method stub
-		while(this.linePositions.get(3).isTaken());
-		this.setCurrentPosition(this.linePositions.get(3));
-		this.currentPosition.takePosition(this);
-		this.updateValue(this.currentPosition);
+		
+		lineMoving();
+		
+		if(this instanceof TruckVehicle) {
+			oldLock = newLock;
+			newLock = this.truckPoliceTerminal.getLock();
+			newLock.lock();
+			moveForward(this.truckPoliceTerminal);
+			this.updateValue(this.currentPosition);
+			oldLock.unlock();
+			Thread.sleep(ptTime*this.passengers.size());
+			for(Passenger p : passengers) {
+				if(p.getId().isValid() == false) {
+					passengers.remove(p);
+					if(p instanceof DriverPassenger) {
+						passengers.remove(p);
+						this.currentPosition.releasePosition();
+						this.updateValue(this.currentPosition);
+						newLock.unlock();
+						return this.currentPosition;
+					}
+				}
+			}
+			// customs terminal
+			oldLock = newLock;
+			newLock = this.truckCustomsTerminal.getLock();
+			newLock.lock();
+			moveForward(this.truckCustomsTerminal);
+			this.updateValue(this.currentPosition);
+			oldLock.unlock();
+			Thread.sleep(ctTime*this.passengers.size());
+			customsTerminalProcess();
+			Thread.sleep(10000);
+			
+		}
+		else if(this instanceof PersonalVehicle) {
+			
+		}
+		else if(this instanceof BusVehicle) {
+			
+		}
+
 		return this.getCurrentPosition();
 	}
 	
+	public abstract void policeTerminalProcess();
 	
+	public abstract void customsTerminalProcess();
 	
+	private void moveForward(Position nextPos) {
+		// take next
+		nextPos.takePosition(this);
+		// release current
+		if(this.currentPosition != null) {
+			this.currentPosition.releasePosition();
+			//this.currentPosition.updateImage();
+			this.updateValue(this.currentPosition);
+			
+		}
+		// update current
+		this.setCurrentPosition(nextPos);
+	}
+	private void lineMoving() {
+
+		Position nextPosition = null;
+		int i = 0;
+		while (i < 5) {
+			oldLock = newLock;
+			nextPosition = this.linePositions.get(i);
+			newLock = nextPosition.getLock();
+			// lock position
+			newLock.lock();
+			moveForward(nextPosition);
+			if(oldLock != null)
+				oldLock.unlock();
+
+			this.updateValue(this.currentPosition);
+			i++;
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	/**
-	 * GETTERS AND SETTERS 
+	 * GETTERS AND SETTERS
 	 */
-	
+
 	/**
 	 * @return the passengers
 	 */
@@ -114,89 +217,131 @@ public abstract class Vehicle extends Task<Position>{
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
 	}
+
 	/**
 	 * @return the image
 	 */
 	public Image getImage() {
 		return image;
 	}
+
 	/**
 	 * @param image the image to set
 	 */
 	public void setImage(Image image) {
 		this.image = image;
 	}
+
 	/**
 	 * @return the linePositions
 	 */
 	public List<Position> getLinePositions() {
 		return linePositions;
 	}
+
 	/**
 	 * @param linePositions the linePositions to set
 	 */
 	public void setLinePositions(List<Position> linePositions) {
 		this.linePositions = linePositions;
 	}
+
 	/**
 	 * @return the carBusPoliceTerminals
 	 */
 	public List<Position> getCarBusPoliceTerminals() {
 		return carBusPoliceTerminals;
 	}
+
 	/**
 	 * @param carBusPoliceTerminals the carBusPoliceTerminals to set
 	 */
 	public void setCarBusPoliceTerminals(List<Position> carBusPoliceTerminals) {
 		this.carBusPoliceTerminals = carBusPoliceTerminals;
 	}
+
 	/**
 	 * @return the carBusCustomsTerminal
 	 */
 	public CarBusCustomsTerminal getCarBusCustomsTerminal() {
 		return carBusCustomsTerminal;
 	}
+
 	/**
 	 * @param carBusCustomsTerminal the carBusCustomsTerminal to set
 	 */
 	public void setCarBusCustomsTerminal(CarBusCustomsTerminal carBusCustomsTerminal) {
 		this.carBusCustomsTerminal = carBusCustomsTerminal;
 	}
+
 	/**
 	 * @return the truckPoliceTerminal
 	 */
 	public TruckPoliceTerminal getTruckPoliceTerminal() {
 		return truckPoliceTerminal;
 	}
+
 	/**
 	 * @param truckPoliceTerminal the truckPoliceTerminal to set
 	 */
 	public void setTruckPoliceTerminal(TruckPoliceTerminal truckPoliceTerminal) {
 		this.truckPoliceTerminal = truckPoliceTerminal;
 	}
+
 	/**
 	 * @return the truckCustomsTerminal
 	 */
 	public TruckCustomsTerminal getTruckCustomsTerminal() {
 		return truckCustomsTerminal;
 	}
+
 	/**
 	 * @param truckCustomsTerminal the truckCustomsTerminal to set
 	 */
 	public void setTruckCustomsTerminal(TruckCustomsTerminal truckCustomsTerminal) {
 		this.truckCustomsTerminal = truckCustomsTerminal;
 	}
+
 	/**
 	 * @return the currentPosition
 	 */
 	public Position getCurrentPosition() {
 		return currentPosition;
 	}
+
 	/**
 	 * @param currentPosition the currentPosition to set
 	 */
 	public void setCurrentPosition(Position currentPosition) {
 		this.currentPosition = currentPosition;
+	}
+
+	/**
+	 * @return the ctTime
+	 */
+	public long getCtTime() {
+		return ctTime;
+	}
+
+	/**
+	 * @param ctTime the ctTime to set
+	 */
+	public void setCtTime(long ctTime) {
+		this.ctTime = ctTime;
+	}
+
+	/**
+	 * @return the ptTime
+	 */
+	public long getPtTime() {
+		return ptTime;
+	}
+
+	/**
+	 * @param ptTime the ptTime to set
+	 */
+	public void setPtTime(long ptTime) {
+		this.ptTime = ptTime;
 	}
 
 }

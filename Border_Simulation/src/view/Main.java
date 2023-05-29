@@ -20,11 +20,8 @@ public class Main extends Application {
 			ImageView carView = new ImageView(car);
 			ImageView busView = new ImageView(bus);
 			
-			carView.setFitWidth(400);
-			carView.setFitHeight(400);
-			carView.setPreserveRatio(true);
 			Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
-			Scene scene = new Scene(root,400,400);
+			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {

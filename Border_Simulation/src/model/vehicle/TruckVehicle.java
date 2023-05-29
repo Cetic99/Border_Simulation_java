@@ -22,6 +22,9 @@ public class TruckVehicle extends Vehicle {
 		 * Setting image for Bus
 		 */
 		this.setImage(new Image("file:src/view/images/truck.png"));
+		
+		this.setCtTime(500);
+		this.setPtTime(500);
 	}
 	
 	public TruckVehicle() {
@@ -33,6 +36,24 @@ public class TruckVehicle extends Vehicle {
 		 * Setting image for Bus
 		 */
 		this.setImage(new Image("file:src/view/images/truck.png"));
+		
+		this.setCtTime(500);
+		this.setPtTime(500);
+	}
+	
+	@Override
+	public void policeTerminalProcess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void customsTerminalProcess() {
+		// TODO Auto-generated method stub
+		if(this.getDeclaredWeight() < this.getRealWeight()) {
+			System.out.println("Overweight");
+		}
+		
 	}
 	/**
 	 * @return the declaredWeight
@@ -92,5 +113,7 @@ public class TruckVehicle extends Vehicle {
             realWeight = declaredWeight * Math.random();
         }
 	}
+
+
 
 }

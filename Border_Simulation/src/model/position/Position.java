@@ -2,20 +2,22 @@ package model.position;
 
 import javafx.scene.image.ImageView;
 import model.vehicle.Vehicle;
-
+import java.util.concurrent.locks.*;
 public class Position {
 	
 	private boolean taken = false;
 	private Vehicle vehicle;
 	private ImageView imView;
+	private Lock lock = new ReentrantLock();
 	
 	
-	public synchronized void takePosition(Vehicle v) {
+	public void takePosition(Vehicle v) {
 		this.setVehicle(v);
 		this.setTaken(true);
 	}
 	
-	public synchronized void releasePosition() {
+	public void releasePosition() {
+		this.vehicle = null;
 		this.setTaken(false);
 	}
 	/**
@@ -60,6 +62,24 @@ public class Position {
 		this.imView = imView;
 	}
 	public void updateImage() {
-		this.imView.setImage(this.vehicle.getImage());
+		if(this.vehicle == null) {
+			this.imView.setImage(null);
+		}
+		else
+			this.imView.setImage(this.vehicle.getImage());
+	}
+
+	/**
+	 * @return the lock
+	 */
+	public Lock getLock() {
+		return lock;
+	}
+
+	/**
+	 * @param lock the lock to set
+	 */
+	public void setLock(Lock lock) {
+		this.lock = lock;
 	}
 }

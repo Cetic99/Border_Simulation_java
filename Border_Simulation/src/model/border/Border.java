@@ -147,12 +147,19 @@ public class Border extends Task<Position>{
 	protected Position call() throws Exception {
 		// TODO Auto-generated method stub
 		
+		int run = 1;
 		
-		this.vehicles.peek().valueProperty().addListener((arg0, arg1, arg2) -> this.updateValue(arg2));
+		this.vehicles.stream().forEach(e -> e.valueProperty().addListener((arg0, arg1, arg2) -> {
+			this.updateValue(arg2);
+		}));
 		
-		Thread t = new Thread(this.vehicles.peek());
-		t.setDaemon(true);
-		t.start();
+		while(run == 1 && !this.vehicles.isEmpty()) {
+			if(this.linePositions.get(0).isTaken() == false) {
+				Thread t = new Thread(this.vehicles.poll());
+				t.setDaemon(true);
+				t.start();
+			}
+		}
 		
 		return this.vehicles.peek().getCurrentPosition();
 	}
