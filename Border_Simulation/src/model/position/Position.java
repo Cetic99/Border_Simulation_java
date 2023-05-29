@@ -9,6 +9,15 @@ public class Position {
 	private Vehicle vehicle;
 	private ImageView imView;
 	
+	
+	public synchronized void takePosition(Vehicle v) {
+		this.setVehicle(v);
+		this.setTaken(true);
+	}
+	
+	public synchronized void releasePosition() {
+		this.setTaken(false);
+	}
 	/**
 	 * @return the vehicle
 	 */
@@ -49,5 +58,8 @@ public class Position {
 	 */
 	public void setImView(ImageView imView) {
 		this.imView = imView;
+	}
+	public void updateImage() {
+		this.imView.setImage(this.vehicle.getImage());
 	}
 }

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 
 import java.util.Random;
@@ -17,7 +18,7 @@ import model.position.Position;
 import model.position.TruckCustomsTerminal;
 import model.position.TruckPoliceTerminal;
 
-public abstract class Vehicle {
+public abstract class Vehicle extends Task<Position>{
 
 	private Set<? extends Passenger> passengers;
 	private int capacity = 0;
@@ -28,6 +29,8 @@ public abstract class Vehicle {
 	private CarBusCustomsTerminal carBusCustomsTerminal;
 	private TruckPoliceTerminal truckPoliceTerminal;
 	private TruckCustomsTerminal truckCustomsTerminal;
+	
+	private Position currentPosition = null;
 
 	/*----------------- Constructors --------------------*/
 	public Vehicle(Set<? extends Passenger> passengers) {
@@ -65,8 +68,18 @@ public abstract class Vehicle {
 		this.setPassengers(passengers);
 	}
 	
-	
-
+	/*
+	 * Thread method
+	 */
+	@Override
+	protected Position call() throws Exception {
+		// TODO Auto-generated method stub
+		while(this.linePositions.get(3).isTaken());
+		this.setCurrentPosition(this.linePositions.get(3));
+		this.currentPosition.takePosition(this);
+		this.updateValue(this.currentPosition);
+		return this.getCurrentPosition();
+	}
 	
 	
 	
@@ -172,6 +185,18 @@ public abstract class Vehicle {
 	 */
 	public void setTruckCustomsTerminal(TruckCustomsTerminal truckCustomsTerminal) {
 		this.truckCustomsTerminal = truckCustomsTerminal;
+	}
+	/**
+	 * @return the currentPosition
+	 */
+	public Position getCurrentPosition() {
+		return currentPosition;
+	}
+	/**
+	 * @param currentPosition the currentPosition to set
+	 */
+	public void setCurrentPosition(Position currentPosition) {
+		this.currentPosition = currentPosition;
 	}
 
 }

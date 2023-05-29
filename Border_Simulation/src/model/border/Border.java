@@ -1,6 +1,7 @@
 package model.border;
 
 import javafx.concurrent.Task;
+import javafx.scene.image.ImageView;
 import model.position.*;
 import model.vehicle.BusVehicle;
 import model.vehicle.PersonalVehicle;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class Border extends Task<Vehicle>{
+public class Border extends Task<Position>{
 	
 	private int numBusses = 5;
 	private int numTrucks = 10;
@@ -28,7 +29,7 @@ public class Border extends Task<Vehicle>{
 	private TruckCustomsTerminal truckCustomsTerminal = new TruckCustomsTerminal();
 	
 	/*------------ Constructors --------------------*/
-	public Border() {
+	private Border() {
 		/*
 		 * Creating positions
 		 */
@@ -39,6 +40,21 @@ public class Border extends Task<Vehicle>{
 		this.createVehicles();
 		
 		this.notifyVehiclesAboutPositions();
+
+	}
+	public Border(ImageView line1,
+			ImageView line2,
+			ImageView line3,
+			ImageView line4,
+			ImageView line5,
+			ImageView carBusPT1,
+			ImageView carBusPT2,
+			ImageView carBusCT,
+			ImageView truckPT,
+			ImageView truckCT) {
+		this();
+		this.associateImageViewToPosition(line1, line2, line3, line4, line5, carBusPT1, carBusPT2, carBusCT, truckPT, truckCT);
+		
 
 	}
 	/*----------------------------------------------*/
@@ -53,6 +69,30 @@ public class Border extends Task<Vehicle>{
 		});
 	}
 	
+	private void associateImageViewToPosition(ImageView line1,
+			ImageView line2,
+			ImageView line3,
+			ImageView line4,
+			ImageView line5,
+			ImageView carBusPT1,
+			ImageView carBusPT2,
+			ImageView carBusCT,
+			ImageView truckPT,
+			ImageView truckCT) {
+		this.linePositions.get(0).setImView(line1);
+		this.linePositions.get(1).setImView(line2);
+		this.linePositions.get(2).setImView(line3);
+		this.linePositions.get(3).setImView(line4);
+		this.linePositions.get(4).setImView(line5);
+		
+		this.carBusPoliceTerminals.get(0).setImView(carBusPT1);
+		this.carBusPoliceTerminals.get(1).setImView(carBusPT2);
+		
+		this.carBusCustomsTerminal.setImView(carBusCT);
+		this.truckPoliceTerminal.setImView(truckPT);
+		this.truckCustomsTerminal.setImView(truckCT);
+		
+	}
 	private void createPositions() {
 		for(int i = 0;i<5; i++) {
 			linePositions.add(new LinePosition());
@@ -99,11 +139,24 @@ public class Border extends Task<Vehicle>{
 		}
 	}
 
+	//===========================================
+	/*
+	 * FUNCTION THAT DOES THE WORK
+	 */
 	@Override
-	protected Vehicle call() throws Exception {
+	protected Position call() throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		
+		
+		this.vehicles.peek().valueProperty().addListener((arg0, arg1, arg2) -> this.updateValue(arg2));
+		
+		Thread t = new Thread(this.vehicles.peek());
+		t.setDaemon(true);
+		t.start();
+		
+		return this.vehicles.peek().getCurrentPosition();
 	}
+	//============================================
 
 	/**
 	 * @return the linePositions

@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import model.Suitcase;
 import model.passenger.BusPassenger;
 import model.passenger.Passenger;
+import model.position.Position;
 import model.passenger.DriverPassenger;
 
 public class BusVehicle extends Vehicle{
@@ -66,6 +67,12 @@ public class BusVehicle extends Vehicle{
 	private void putSuitcasesInCargo() {
 		Stream<? extends Passenger> stream = this.getPassengers().stream();
 		this.cargo = new HashSet<>();
-		stream.forEach(e ->this.cargo.add(((BusPassenger)e).getSuitcase()));
+		stream.forEach(e ->{
+			if(e instanceof BusPassenger) {
+				this.cargo.add(((BusPassenger)e).getSuitcase());
+			}
+		});
 	}
+
+	
 }
