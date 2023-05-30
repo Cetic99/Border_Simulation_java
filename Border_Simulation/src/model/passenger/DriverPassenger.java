@@ -4,6 +4,7 @@ import model.PassengerID;
 
 public class DriverPassenger extends Passenger{
 
+	private static final long serialVersionUID = 1L;
 	public static Integer numDrivers = 0;
 	
 	/*------ constructors -----------------*/

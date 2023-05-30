@@ -2,6 +2,7 @@ package model.border;
 
 import javafx.concurrent.Task;
 import javafx.scene.image.ImageView;
+import model.passenger.Passenger;
 import model.position.*;
 import model.vehicle.BusVehicle;
 import model.vehicle.PersonalVehicle;
@@ -13,6 +14,13 @@ import java.util.Queue;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class Border extends Task<Position>{
 	
@@ -27,6 +35,12 @@ public class Border extends Task<Position>{
 	private CarBusCustomsTerminal carBusCustomsTerminal = new CarBusCustomsTerminal();
 	private TruckPoliceTerminal truckPoliceTerminal = new TruckPoliceTerminal();
 	private TruckCustomsTerminal truckCustomsTerminal = new TruckCustomsTerminal();
+	
+	
+	/*
+	 * Punished persons
+	 */
+	private CopyOnWriteArrayList<Passenger> punishedPersons = new CopyOnWriteArrayList<>();
 	
 	/*------------ Constructors --------------------*/
 	private Border() {
@@ -125,6 +139,10 @@ public class Border extends Task<Position>{
 			tmpVehicle.add(new PersonalVehicle());
 		}
 		
+		tmpVehicle.stream().forEach(vehicle -> 
+									vehicle.setPunishmentConsumer(person -> 
+																	this.punishedPersons.add(person)));
+		
 		Random rand = new Random();
 		int index = 0;
 		while(!tmpVehicle.isEmpty()) {
@@ -139,6 +157,33 @@ public class Border extends Task<Position>{
 		}
 	}
 
+	public void close() {
+		
+		writePunishedPersons();
+	      
+		
+	}
+	
+	private void writePunishedPersons() {
+		FileOutputStream fos;
+		ObjectOutputStream oos;
+		try {
+			fos = new FileOutputStream("punishedPersons.tmp");
+			try {
+				oos = new ObjectOutputStream(fos);
+				oos.writeObject(this.punishedPersons);
+				oos.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 	//===========================================
 	/*
 	 * FUNCTION THAT DOES THE WORK
@@ -147,18 +192,18 @@ public class Border extends Task<Position>{
 	protected Position call() throws Exception {
 		// TODO Auto-generated method stub
 		
-		int run = 1;
 		
 		this.vehicles.stream().forEach(e -> e.valueProperty().addListener((arg0, arg1, arg2) -> {
 			this.updateValue(arg2);
 		}));
 		
-		while(run == 1 && !this.vehicles.isEmpty()) {
+		while(!this.vehicles.isEmpty()) {
 			if(this.linePositions.get(0).isTaken() == false) {
 				Thread t = new Thread(this.vehicles.poll());
 				t.setDaemon(true);
 				t.start();
 			}
+			Thread.sleep(100);
 		}
 		
 		return this.vehicles.peek().getCurrentPosition();

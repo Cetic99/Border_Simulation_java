@@ -16,7 +16,10 @@ import model.position.CarBusCustomsTerminal;
 import model.position.Position;
 import model.position.TruckCustomsTerminal;
 import model.position.TruckPoliceTerminal;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.*;
+import java.util.function.Consumer;
 
 public abstract class Vehicle extends Task<Position> {
 
@@ -46,15 +49,25 @@ public abstract class Vehicle extends Task<Position> {
 	 * Stores current position of Vehicle
 	 */
 	private Position currentPosition = null;
+	private Position oldPosition = null;
 	
 	/*
 	 * Used for locking positions(Line,Terminals)
 	 */
-	private Lock oldLock,newLock = null;
+	public Lock oldLock,newLock = null;
+
+
 	/*
 	 * Processing times at PoliceTerminal and CustomsTerminal
 	 */
 	private long ptTime,ctTime;
+	
+	/*
+	 * Punishment rocessing consumer 
+	 */
+	private Consumer<Passenger> punishmentConsumer = null;
+	
+
 
 	/*----------------- Constructors --------------------*/
 	public Vehicle(Set<? extends Passenger> passengers) {
@@ -64,6 +77,7 @@ public abstract class Vehicle extends Task<Position> {
 	public Vehicle() {
 
 	}
+	
 	/*---------------------------------------------------*/
 
 	public void createPassengers() {
@@ -100,66 +114,86 @@ public abstract class Vehicle extends Task<Position> {
 		
 		lineMoving();
 		
-		if(this instanceof TruckVehicle) {
-			oldLock = newLock;
-			newLock = this.truckPoliceTerminal.getLock();
-			newLock.lock();
-			moveForward(this.truckPoliceTerminal);
-			this.updateValue(this.currentPosition);
-			oldLock.unlock();
-			Thread.sleep(ptTime*this.passengers.size());
-			for(Passenger p : passengers) {
-				if(p.getId().isValid() == false) {
-					passengers.remove(p);
-					if(p instanceof DriverPassenger) {
-						passengers.remove(p);
-						this.currentPosition.releasePosition();
-						this.updateValue(this.currentPosition);
-						newLock.unlock();
-						return this.currentPosition;
-					}
+			
+			// police terminal
+//			oldLock = newLock;
+//			newLock = this.truckPoliceTerminal.getLock();
+//			newLock.lock();
+//			moveForward(this.truckPoliceTerminal);
+//			this.updateValue(this.currentPosition);
+//			oldLock.unlock();
+//			Thread.sleep(ptTime*this.passengers.size());
+//			for(Passenger p : passengers) {
+//				if(p.getId().isValid() == false) {
+//					punishPassenger(p);
+//					passengers.remove(p);
+//					if(p instanceof DriverPassenger) {
+//						this.currentPosition.releasePosition();
+//						this.updateValue(this.currentPosition);
+//						newLock.unlock();
+//						return this.currentPosition;
+//					}
+//				}
+//			}
+			if(policeTerminalProcess() == 0) {
+				if(customsTerminalProcess()== 0) {
+					// successfully crossed the border
+				}
+				else {
+					// failed on customs terminal
 				}
 			}
-			// customs terminal
-			oldLock = newLock;
-			newLock = this.truckCustomsTerminal.getLock();
-			newLock.lock();
-			moveForward(this.truckCustomsTerminal);
-			this.updateValue(this.currentPosition);
-			oldLock.unlock();
-			Thread.sleep(ctTime*this.passengers.size());
-			customsTerminalProcess();
-			Thread.sleep(10000);
-			
-		}
-		else if(this instanceof PersonalVehicle) {
-			
-		}
-		else if(this instanceof BusVehicle) {
-			
-		}
+			else {
+				// failed on police terminal
+			}
+			moveForward(null);
+//			// customs terminal
+//			oldLock = newLock;
+//			newLock = this.truckCustomsTerminal.getLock();
+//			newLock.lock();
+//			moveForward(this.truckCustomsTerminal);
+//			this.updateValue(this.currentPosition);
+//			oldLock.unlock();
+//			Thread.sleep(ctTime*this.passengers.size());
+//			customsTerminalProcess();
+//			Thread.sleep(10000);
+
 
 		return this.getCurrentPosition();
 	}
 	
-	public abstract void policeTerminalProcess();
+	public void punishPassenger(Passenger p) {
+		punishmentConsumer.accept(p);
+	}
 	
-	public abstract void customsTerminalProcess();
+	public abstract int policeTerminalProcess();
 	
-	private void moveForward(Position nextPos) {
+	public abstract int customsTerminalProcess();
+	
+	public void moveForward(Position nextPos) {
 		// take next
-		nextPos.takePosition(this);
-		// release current
-		if(this.currentPosition != null) {
-			this.currentPosition.releasePosition();
-			//this.currentPosition.updateImage();
-			this.updateValue(this.currentPosition);
+		if(nextPos != null) {
+			this.oldPosition = this.currentPosition;
+			nextPos.takePosition(this);
+			// release current
+			if(this.currentPosition != null) {
+				this.currentPosition.releasePosition();
+				this.oldPosition.updateImage();
+				this.updateValue(this.currentPosition);
+				
+			}
+			// update current
+			this.setCurrentPosition(nextPos);
 			
 		}
-		// update current
-		this.setCurrentPosition(nextPos);
+		else if(this.currentPosition != null){
+			this.currentPosition.releasePosition();
+			this.currentPosition.updateImage();
+			//this.updateValue(this.currentPosition);
+		}
+		
 	}
-	private void lineMoving() {
+	public void lineMoving() {
 
 		Position nextPosition = null;
 		int i = 0;
@@ -193,6 +227,21 @@ public abstract class Vehicle extends Task<Position> {
 	/**
 	 * @return the passengers
 	 */
+	public Lock getOldLock() {
+		return oldLock;
+	}
+
+	public void setOldLock(Lock oldLock) {
+		this.oldLock = oldLock;
+	}
+
+	public Lock getNewLock() {
+		return newLock;
+	}
+
+	public void setNewLock(Lock newLock) {
+		this.newLock = newLock;
+	}
 	public Set<? extends Passenger> getPassengers() {
 		return passengers;
 	}
@@ -342,6 +391,20 @@ public abstract class Vehicle extends Task<Position> {
 	 */
 	public void setPtTime(long ptTime) {
 		this.ptTime = ptTime;
+	}
+
+	/**
+	 * @return the punishmentConsumer
+	 */
+	public Consumer<Passenger> getPunishmentConsumer() {
+		return punishmentConsumer;
+	}
+
+	/**
+	 * @param punishmentConsumer the punishmentConsumer to set
+	 */
+	public void setPunishmentConsumer(Consumer<Passenger> punishmentConsumer) {
+		this.punishmentConsumer = punishmentConsumer;
 	}
 
 }

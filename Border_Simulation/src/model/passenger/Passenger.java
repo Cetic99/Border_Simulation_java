@@ -1,11 +1,13 @@
 package model.passenger;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import model.PassengerID;
 
-public class Passenger {
+public class Passenger implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private PassengerID id = null;
 	private static Integer passengerCount = 0;
 	

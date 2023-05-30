@@ -54,4 +54,10 @@ public class MainController implements Initializable {
 		t.start();
 	}
 
+	
+	public void exit() {
+		border.close();
+		System.out.println("Closing");
+	}
+
 }

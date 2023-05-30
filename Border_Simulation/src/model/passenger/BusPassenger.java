@@ -7,6 +7,7 @@ import model.Suitcase;
 
 public class BusPassenger extends Passenger{
 
+	private static final long serialVersionUID = 1L;
 	private Suitcase suitcase = null;
 	public static Integer numBusPassengers = 0;
 	/*------ constructors -----------------*/

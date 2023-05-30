@@ -1,7 +1,7 @@
 package view;
 	
 import javafx.application.Application;
-
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -10,20 +10,23 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
 public class Main extends Application {
+	
+	MainController controller;
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Image truck = new Image("file:src/view/images/truck.png");
-			Image car = new Image("file:src/view/images/car.png");
-			Image bus = new Image("file:src/view/images/bus.jpg");
-			ImageView truckView = new ImageView(truck);
-			ImageView carView = new ImageView(car);
-			ImageView busView = new ImageView(bus);
 			
-			Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+			FXMLLoader loader = new FXMLLoader();
+			Parent root = loader.load(getClass().getResourceAsStream("Main.fxml"));
+			controller = loader.getController();
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
+			primaryStage.setOnCloseRequest(e -> {
+				controller.exit();
+				Platform.exit();
+			});
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

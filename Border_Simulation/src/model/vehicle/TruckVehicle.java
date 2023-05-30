@@ -3,6 +3,7 @@ package model.vehicle;
 import java.util.Set;
 
 import javafx.scene.image.Image;
+import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 
 public class TruckVehicle extends Vehicle {
@@ -42,17 +43,54 @@ public class TruckVehicle extends Vehicle {
 	}
 	
 	@Override
-	public void policeTerminalProcess() {
+	public int policeTerminalProcess() {
 		// TODO Auto-generated method stub
-		
+		// police terminal
+		this.oldLock = this.getNewLock();
+		this.newLock = this.getTruckPoliceTerminal().getLock();
+		this.newLock.lock();
+		moveForward(this.getTruckPoliceTerminal());
+		this.updateValue(this.getCurrentPosition());
+		this.oldLock.unlock();
+		try {
+			Thread.sleep(this.getPtTime() * this.getPassengers().size());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (Passenger p : this.getPassengers()) {
+			if (p.getId().isValid() == false) {
+				punishPassenger(p);
+				this.getPassengers().remove(p);
+				if (p instanceof DriverPassenger) {
+					moveForward(null);
+					this.newLock.unlock();
+					return -1;
+				}
+			}
+		}
+		return 0;
+
 	}
 
 	@Override
-	public void customsTerminalProcess() {
+	public int customsTerminalProcess() {
 		// TODO Auto-generated method stub
+		this.oldLock = this.newLock;
+		this.newLock = this.getTruckCustomsTerminal().getLock();
+		this.newLock.lock();
+		this.oldLock.unlock();
+		moveForward(this.getTruckCustomsTerminal());
+		this.updateValue(this.getCurrentPosition());
+		
 		if(this.getDeclaredWeight() < this.getRealWeight()) {
 			System.out.println("Overweight");
+			moveForward(null);
+			this.newLock.unlock();
+			return -1;
 		}
+		this.newLock.unlock();
+		return 0;
 		
 	}
 	/**
