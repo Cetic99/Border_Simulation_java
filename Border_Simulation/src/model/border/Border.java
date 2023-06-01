@@ -2,27 +2,33 @@ package model.border;
 
 import javafx.concurrent.Task;
 import javafx.scene.image.ImageView;
+import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 import model.position.*;
 import model.vehicle.BusVehicle;
 import model.vehicle.PersonalVehicle;
-import model.vehicle.TruckVehicle;
 import model.vehicle.Vehicle;
+import model.vehicle.TruckVehicle;
 
 import java.util.List;
 import java.util.Queue;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 public class Border extends Task<Position>{
+	
+	private static String PUNISHED_PERSON_OBJECTS = "punished_persons.tmp";
+	private static String DID_NOT_CROSS_BORDER = "did_not_cross_border.txt";
 	
 	private int numBusses = 5;
 	private int numTrucks = 10;
@@ -41,6 +47,7 @@ public class Border extends Task<Position>{
 	 * Punished persons
 	 */
 	private CopyOnWriteArrayList<Passenger> punishedPersons = new CopyOnWriteArrayList<>();
+	private CopyOnWriteArrayList<TruckVehicle> punishedTrucks = new CopyOnWriteArrayList<>();
 	
 	/*------------ Constructors --------------------*/
 	private Border() {
@@ -133,7 +140,11 @@ public class Border extends Task<Position>{
 			tmpVehicle.add(new BusVehicle());
 		}
 		for(int i = 0; i < numTrucks; i++) {
-			tmpVehicle.add(new TruckVehicle());
+			TruckVehicle truck = new TruckVehicle();
+			truck.setCustomsDoc(e -> {
+				this.punishedTrucks.add(e);
+			});
+			tmpVehicle.add(truck);
 		}
 		for(int i = 0; i < numPersonalVehicles; i++) {
 			tmpVehicle.add(new PersonalVehicle());
@@ -160,7 +171,7 @@ public class Border extends Task<Position>{
 	public void close() {
 		
 		writePunishedPersons();
-	      
+	    writeRecordToFile();
 		
 	}
 	
@@ -168,7 +179,7 @@ public class Border extends Task<Position>{
 		FileOutputStream fos;
 		ObjectOutputStream oos;
 		try {
-			fos = new FileOutputStream("punishedPersons.tmp");
+			fos = new FileOutputStream(PUNISHED_PERSON_OBJECTS);
 			try {
 				oos = new ObjectOutputStream(fos);
 				oos.writeObject(this.punishedPersons);
@@ -178,6 +189,38 @@ public class Border extends Task<Position>{
 				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void writeRecordToFile() {
+		try (BufferedWriter br = new BufferedWriter(new FileWriter(DID_NOT_CROSS_BORDER));){
+			punishedPersons.stream().forEach(e -> {
+				String output  = e.toString();
+				if(e instanceof DriverPassenger) {
+					output = output +" did not have valid id! "+ ((DriverPassenger) e).getVehicle().toString();
+				}
+				try {
+					br.write(output);
+					br.newLine();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			});
+			punishedTrucks.stream().forEach(e -> {
+				try {
+					br.write(e.toString());
+					br.newLine();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			});
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -197,9 +240,11 @@ public class Border extends Task<Position>{
 			this.updateValue(arg2);
 		}));
 		
+		
 		while(!this.vehicles.isEmpty()) {
 			if(this.linePositions.get(0).isTaken() == false) {
 				Thread t = new Thread(this.vehicles.poll());
+				t.setPriority(3);
 				t.setDaemon(true);
 				t.start();
 			}
@@ -278,6 +323,18 @@ public class Border extends Task<Position>{
 	 */
 	public void setTruckCustomsTerminal(TruckCustomsTerminal truckCustomsTerminal) {
 		this.truckCustomsTerminal = truckCustomsTerminal;
+	}
+	/**
+	 * @return the punishedTrucks
+	 */
+	public CopyOnWriteArrayList<TruckVehicle> getPunishedTrucks() {
+		return punishedTrucks;
+	}
+	/**
+	 * @param punishedTrucks the punishedTrucks to set
+	 */
+	public void setPunishedTrucks(CopyOnWriteArrayList<TruckVehicle> punishedTrucks) {
+		this.punishedTrucks = punishedTrucks;
 	}
 
 

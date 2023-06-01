@@ -1,11 +1,13 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
 
-public class PassengerID {
+public class PassengerID implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private String surname;
 	private boolean valid;
@@ -75,6 +77,11 @@ public class PassengerID {
 	 */
 	public void setValid(boolean valid) {
 		this.valid = valid;
+	}
+	
+	@Override
+	public String toString() {
+		return this.name + " " + this.surname;
 	}
 	
 }

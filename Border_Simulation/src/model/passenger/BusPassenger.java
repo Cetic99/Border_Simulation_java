@@ -14,6 +14,7 @@ public class BusPassenger extends Passenger{
 	public BusPassenger() {
 		super("BussPassenger",numBusPassengers.toString());
 		numBusPassengers++;
+		this.createSuitcase();
 	}
 	
 	public BusPassenger(PassengerID id) {
@@ -23,6 +24,7 @@ public class BusPassenger extends Passenger{
 	}
 	public BusPassenger(String name, String surname) {
 		super(name, surname);
+		this.createSuitcase();
 	}
 	/*-------------------------------------*/
 	

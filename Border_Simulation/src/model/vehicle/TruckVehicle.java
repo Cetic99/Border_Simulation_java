@@ -1,6 +1,8 @@
 package model.vehicle;
 
+import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javafx.scene.image.Image;
 import model.passenger.DriverPassenger;
@@ -12,11 +14,13 @@ public class TruckVehicle extends Vehicle {
 	private double realWeight = 0;
 	private boolean neededCustoms = false;
 	
+	private Consumer<TruckVehicle> customsDoc;
+	
 	{
 		this.setCapacity(3);
 	}
 	
-	public TruckVehicle(Set<Passenger> passengers) {
+	public TruckVehicle(List<Passenger> passengers) {
 		super(passengers);
 		// TODO Auto-generated constructor stub
 		/**
@@ -40,6 +44,10 @@ public class TruckVehicle extends Vehicle {
 		
 		this.setCtTime(500);
 		this.setPtTime(500);
+		
+		this.calculateDeclaredMass();
+		this.calculateRealMass();
+		this.calculateNeededCustoms();
 	}
 	
 	@Override
@@ -79,19 +87,35 @@ public class TruckVehicle extends Vehicle {
 		this.oldLock = this.newLock;
 		this.newLock = this.getTruckCustomsTerminal().getLock();
 		this.newLock.lock();
-		this.oldLock.unlock();
 		moveForward(this.getTruckCustomsTerminal());
 		this.updateValue(this.getCurrentPosition());
+		this.oldLock.unlock();
+
+		try {
+			Thread.sleep(this.getCtTime());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(this.isNeededCustoms()) {
+			if(createCustomsDocumentation() == -1)
+				return -1;
+		}
 		
-		if(this.getDeclaredWeight() < this.getRealWeight()) {
+		this.newLock.unlock();
+		return 0;
+		
+	}
+	
+	private int createCustomsDocumentation() {
+		if(this.getRealWeight() > this.getDeclaredWeight()) {
+			this.customsDoc.accept(this);
 			System.out.println("Overweight");
 			moveForward(null);
 			this.newLock.unlock();
 			return -1;
 		}
-		this.newLock.unlock();
 		return 0;
-		
 	}
 	/**
 	 * @return the declaredWeight
@@ -142,7 +166,7 @@ public class TruckVehicle extends Vehicle {
 		this.declaredWeight = Math.random()*10000;
 	}
 	
-	private void calulcateRealMass() {
+	private void calculateRealMass() {
 		if (Math.random() <= 0.2) {
             double percentageIncrease = Math.random() * 30;
             double adjustedWeight = declaredWeight * (1 + percentageIncrease / 100);
@@ -152,6 +176,38 @@ public class TruckVehicle extends Vehicle {
         }
 	}
 
+	/**
+	 * @return the customsDoc
+	 */
+	public Consumer<TruckVehicle> getCustomsDoc() {
+		return customsDoc;
+	}
+
+	/**
+	 * @param customsDoc the customsDoc to set
+	 */
+	public void setCustomsDoc(Consumer<TruckVehicle> customsDoc) {
+		this.customsDoc = customsDoc;
+	}
+
+
+	@Override
+	public String toString() {
+		String retString;
+		String passengers = super.toString();
+		String declaredWeight;
+		String realWeight;
+		
+		
+		declaredWeight = Double.toString(getDeclaredWeight());
+		realWeight = Double.toString(getRealWeight());
+		
+		retString = "TRUCK:: " +passengers + 
+				"DeclaredWeight: " + declaredWeight + 
+				",RealWeight: "+ realWeight;
+		
+		return retString;
+	}
 
 
 }

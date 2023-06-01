@@ -1,5 +1,6 @@
 package model.vehicle;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -8,14 +9,16 @@ import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 import model.position.Position;
 
-public class PersonalVehicle extends Vehicle {
+public class PersonalVehicle extends Vehicle implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	{
 		this.setCapacity(5);
 	}
 	
 	/*--------------- Constructors ---------------------*/
-	public PersonalVehicle(Set<Passenger> passengers) {
+	public PersonalVehicle(List<Passenger> passengers) {
 		super(passengers);
 		// TODO Auto-generated constructor stub
 		/**
@@ -77,20 +80,20 @@ public class PersonalVehicle extends Vehicle {
 				}
 			}
 		}
-		this.oldLock = this.newLock;
-		this.newLock = this.getCarBusCustomsTerminal().getLock();
-		this.newLock.lock();
-		moveForward(this.getCarBusCustomsTerminal());
-		if(oldLock != null)
-			this.oldLock.unlock();
-		this.updateValue(this.getCurrentPosition());
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.newLock.unlock();
+//		this.oldLock = this.newLock;
+//		this.newLock = this.getCarBusCustomsTerminal().getLock();
+//		this.newLock.lock();
+//		moveForward(this.getCarBusCustomsTerminal());
+//		if(oldLock != null)
+//			this.oldLock.unlock();
+//		this.updateValue(this.getCurrentPosition());
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		this.newLock.unlock();
 		
 		return 0;
 
@@ -102,9 +105,9 @@ public class PersonalVehicle extends Vehicle {
 		this.oldLock = this.newLock;
 		this.newLock = this.getCarBusCustomsTerminal().getLock();
 		this.newLock.lock();
-		this.oldLock.unlock();
 		moveForward(this.getCarBusCustomsTerminal());
 		this.updateValue(this.getCurrentPosition());
+		this.oldLock.unlock();
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -117,6 +120,9 @@ public class PersonalVehicle extends Vehicle {
 		
 	}
 
-
+	@Override
+	public String toString() {
+		return "CAR:: " +super.toString();
+	}
 	
 }

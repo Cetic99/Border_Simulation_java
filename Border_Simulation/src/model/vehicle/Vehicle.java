@@ -20,13 +20,13 @@ import model.position.TruckPoliceTerminal;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.*;
 import java.util.function.Consumer;
-
+import java.util.ArrayList;
 public abstract class Vehicle extends Task<Position> {
 
 	/*
 	 * Stores passengers in Vehicle
 	 */
-	private Set<? extends Passenger> passengers;
+	private List<? extends Passenger> passengers;
 	/*
 	 * Stores capacity of vehicle
 	 */
@@ -70,7 +70,7 @@ public abstract class Vehicle extends Task<Position> {
 
 
 	/*----------------- Constructors --------------------*/
-	public Vehicle(Set<? extends Passenger> passengers) {
+	public Vehicle(List<? extends Passenger> passengers) {
 		this.passengers = passengers;
 	}
 
@@ -84,14 +84,15 @@ public abstract class Vehicle extends Task<Position> {
 		/**
 		 * Create passengers
 		 */
-		Set<Passenger> passengers = new HashSet<>();
+		List<Passenger> passengers = new ArrayList<>();
 		Random rand = new Random();
-		int passengerCount = 1 + (int) rand.nextDouble() * (this.getCapacity() - 1);
-
+		int passengerCount = 1 + (int) (rand.nextDouble() * (this.getCapacity() - 1));
 		/**
 		 * Create driver
 		 */
-		passengers.add(new DriverPassenger());
+		DriverPassenger driver = new DriverPassenger();
+		driver.setVehicle(this);
+		passengers.add(driver);
 		if (this instanceof BusVehicle) {
 			for (int i = 1; i < passengerCount; i++) {
 				passengers.add(new BusPassenger());
@@ -101,7 +102,6 @@ public abstract class Vehicle extends Task<Position> {
 				passengers.add(new Passenger());
 			}
 		}
-
 		this.setPassengers(passengers);
 	}
 
@@ -184,12 +184,12 @@ public abstract class Vehicle extends Task<Position> {
 			}
 			// update current
 			this.setCurrentPosition(nextPos);
-			
+			this.updateValue(this.currentPosition);
 		}
 		else if(this.currentPosition != null){
 			this.currentPosition.releasePosition();
 			this.currentPosition.updateImage();
-			//this.updateValue(this.currentPosition);
+			this.updateValue(this.currentPosition);
 		}
 		
 	}
@@ -242,14 +242,14 @@ public abstract class Vehicle extends Task<Position> {
 	public void setNewLock(Lock newLock) {
 		this.newLock = newLock;
 	}
-	public Set<? extends Passenger> getPassengers() {
+	public List<? extends Passenger> getPassengers() {
 		return passengers;
 	}
 
 	/**
 	 * @param passengers the passengers to set
 	 */
-	public void setPassengers(Set<? extends Passenger> passengers) {
+	public void setPassengers(List<? extends Passenger> passengers) {
 		this.passengers = passengers;
 	}
 
@@ -405,6 +405,24 @@ public abstract class Vehicle extends Task<Position> {
 	 */
 	public void setPunishmentConsumer(Consumer<Passenger> punishmentConsumer) {
 		this.punishmentConsumer = punishmentConsumer;
+	}
+	
+	@Override 
+	public String toString() {
+		String retString;
+		String driverName = "";
+		String otherPassengers = "";
+		for(Passenger p : this.passengers) {
+			if(p instanceof DriverPassenger) {
+				driverName = p.toString();
+			}else {
+				otherPassengers = otherPassengers + ", " + p.toString();
+			}
+		}
+		retString = "Drivers name: " + driverName + 
+				", Passengers names: " + otherPassengers;
+		
+		return retString;
 	}
 
 }

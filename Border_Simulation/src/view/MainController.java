@@ -50,6 +50,7 @@ public class MainController implements Initializable {
 		border.valueProperty().addListener((observable, oldValue, newValue) -> newValue.updateImage());
 		
 		Thread t = new Thread(border);
+		t.setPriority(9);
 		t.setDaemon(true);
 		t.start();
 	}

@@ -11,6 +11,7 @@ import model.passenger.BusPassenger;
 import model.passenger.Passenger;
 import model.position.Position;
 import model.passenger.DriverPassenger;
+import java.util.ArrayList;
 
 public class BusVehicle extends Vehicle{
 
@@ -21,7 +22,7 @@ public class BusVehicle extends Vehicle{
 	}
 	
 	/*---------- Constructors ------------------*/
-	public BusVehicle(Set<BusPassenger> passengers) {
+	public BusVehicle(List<BusPassenger> passengers) {
 		super(passengers);
 		// TODO Auto-generated constructor stub
 		/**
@@ -82,19 +83,24 @@ public class BusVehicle extends Vehicle{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		List<Passenger> toBeRemoved = new ArrayList<>();
 		for (Passenger p : this.getPassengers()) {
 			if (p.getId().isValid() == false) {
 				// punish person
 				punishPassenger(p);
-				this.getPassengers().remove(p);
-				
-				if (p instanceof DriverPassenger) {
+				toBeRemoved.add(p);
+				if(p instanceof BusPassenger) {
+					this.cargo.remove(((BusPassenger)p).getSuitcase());
+				}
+				else if (p instanceof DriverPassenger) {
 					moveForward(null);
 					this.newLock.unlock();
 					return -1;
 				}
 			}
 		}
+		this.getPassengers().removeAll(toBeRemoved);
 		return 0;
 
 	}
@@ -105,9 +111,9 @@ public class BusVehicle extends Vehicle{
 		this.oldLock = this.newLock;
 		this.newLock = this.getCarBusCustomsTerminal().getLock();
 		this.newLock.lock();
-		this.oldLock.unlock();
 		moveForward(this.getCarBusCustomsTerminal());
 		this.updateValue(this.getCurrentPosition());
+		this.oldLock.unlock();
 		try {
 			Thread.sleep(this.getCtTime()*this.getPassengers().size());
 		} catch (InterruptedException e) {
@@ -143,6 +149,11 @@ public class BusVehicle extends Vehicle{
 				this.cargo.add(((BusPassenger)e).getSuitcase());
 			}
 		});
+	}
+	
+	@Override
+	public String toString() {
+		return "BUS:: " +super.toString();
 	}
 
 

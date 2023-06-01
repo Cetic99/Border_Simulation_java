@@ -1,10 +1,14 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import model.passenger.Passenger;
+import java.util.Random;
 
-public class Suitcase {
+public class Suitcase implements Serializable{
+	private static final long serialVersionUID = 1L;
+	public static Random rand = new Random();
 	private boolean allowed = true;
 	private Passenger owner = null;
 
@@ -40,26 +44,11 @@ public class Suitcase {
 		this.owner = owner;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(allowed, owner);
-	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Suitcase other = (Suitcase) obj;
-		return allowed == other.allowed && Objects.equals(owner, other.owner);
-	}
 	
 	/*------- Helper Functions -----------*/
 	private void calculateAllowed() {
-		if(Math.random() <= 0.1)
+		if(rand.nextDouble() <= 0.1)
 			this.allowed = false;
 		else
 			this.allowed = true;
