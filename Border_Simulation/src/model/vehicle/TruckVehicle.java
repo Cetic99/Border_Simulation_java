@@ -1,5 +1,7 @@
 package model.vehicle;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -8,8 +10,9 @@ import javafx.scene.image.Image;
 import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 
-public class TruckVehicle extends Vehicle {
+public class TruckVehicle extends Vehicle implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private double declaredWeight = 0;
 	private double realWeight = 0;
 	private boolean neededCustoms = false;
@@ -26,7 +29,7 @@ public class TruckVehicle extends Vehicle {
 		/**
 		 * Setting image for Bus
 		 */
-		this.setImage(new Image("file:src/view/images/truck.png"));
+		this.setImage(new Image("file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck.png"));
 		
 		this.setCtTime(500);
 		this.setPtTime(500);
@@ -40,7 +43,7 @@ public class TruckVehicle extends Vehicle {
 		/**
 		 * Setting image for Bus
 		 */
-		this.setImage(new Image("file:src/view/images/truck.png"));
+		this.setImage(new Image("file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck.png"));
 		
 		this.setCtTime(500);
 		this.setPtTime(500);
@@ -52,18 +55,18 @@ public class TruckVehicle extends Vehicle {
 	
 	@Override
 	public int policeTerminalProcess() {
-		// TODO Auto-generated method stub
 		// police terminal
 		this.oldLock = this.getNewLock();
 		this.newLock = this.getTruckPoliceTerminal().getLock();
+		while(!this.getTruckPoliceTerminal().isWorking());
 		this.newLock.lock();
 		moveForward(this.getTruckPoliceTerminal());
-		this.updateValue(this.getCurrentPosition());
+		this.getCurrentPosition().updateImage();
+		//this.updateValue(this.getCurrentPosition());
 		this.oldLock.unlock();
 		try {
 			Thread.sleep(this.getPtTime() * this.getPassengers().size());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		for (Passenger p : this.getPassengers()) {
@@ -83,9 +86,9 @@ public class TruckVehicle extends Vehicle {
 
 	@Override
 	public int customsTerminalProcess() {
-		// TODO Auto-generated method stub
 		this.oldLock = this.newLock;
 		this.newLock = this.getTruckCustomsTerminal().getLock();
+		while(!this.getTruckCustomsTerminal().isWorking());
 		this.newLock.lock();
 		moveForward(this.getTruckCustomsTerminal());
 		this.updateValue(this.getCurrentPosition());
@@ -94,7 +97,6 @@ public class TruckVehicle extends Vehicle {
 		try {
 			Thread.sleep(this.getCtTime());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(this.isNeededCustoms()) {

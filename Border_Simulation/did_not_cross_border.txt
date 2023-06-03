@@ -1,9 +1,3 @@
-CAR::Driver 39 did not have valid id! CAR:: Drivers name: , Passengers names: , Passenger 39, Passenger 40, Passenger 41
-CAR::Driver 48 did not have valid id! CAR:: Drivers name: , Passengers names: , Passenger 56, Passenger 57
-Passenger 9
-Passenger 24
-Passenger 30
-BussPassenger 38
-BussPassenger 41
-TRUCK:: Drivers name: TRUCK::Driver 10, Passengers names: DeclaredWeight: 6927.419189251012,RealWeight: 7553.338965685699
-TRUCK:: Drivers name: TRUCK::Driver 9, Passengers names: , Passenger 2DeclaredWeight: 1152.0110385591674,RealWeight: 1266.9916121344484
+BussPassenger 28
+CAR::Driver 15 did not have valid id! CAR:: Drivers name: , Passengers names: , Passenger 4, Passenger 5, Passenger 6
+BussPassenger 68

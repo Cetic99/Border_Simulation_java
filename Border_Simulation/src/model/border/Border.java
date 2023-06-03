@@ -20,10 +20,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.FileNotFoundException;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import controller.watcher.*;
 
 public class Border extends Task<Position>{
 	
@@ -36,8 +41,8 @@ public class Border extends Task<Position>{
 	
 	private Queue<Vehicle> vehicles = null;
 	
-	private List<Position> linePositions = new ArrayList<>();
-	private List<Position> carBusPoliceTerminals = new ArrayList<>();
+	private List<LinePosition> linePositions = new ArrayList<>();
+	private List<CarBusPoliceTerminal> carBusPoliceTerminals = new ArrayList<>();
 	private CarBusCustomsTerminal carBusCustomsTerminal = new CarBusCustomsTerminal();
 	private TruckPoliceTerminal truckPoliceTerminal = new TruckPoliceTerminal();
 	private TruckCustomsTerminal truckCustomsTerminal = new TruckCustomsTerminal();
@@ -113,7 +118,54 @@ public class Border extends Task<Position>{
 		this.truckPoliceTerminal.setImView(truckPT);
 		this.truckCustomsTerminal.setImView(truckCT);
 		
+		readTerminalStatusFromFile();
+		
 	}
+	private void readTerminalStatusFromFile() {
+		try {
+			List<String> lines = Files.readAllLines(Paths.get("src"+ File.separator+"model"+File.separator+"border"+File.separator+"terminals"));
+			updateTerminalStatus(lines);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateTerminalStatus(List<String> terminalsStatus) {
+		for(String terminal : terminalsStatus) {
+			if(terminal.trim().startsWith("carBusPoliceTerminal0")) {
+				if(terminal.trim().endsWith("true"))
+					carBusPoliceTerminals.get(0).setWorking(true);
+				else
+					carBusPoliceTerminals.get(0).setWorking(false);
+			}
+			else if(terminal.trim().startsWith("carBusPoliceTerminal1")){
+				if(terminal.trim().endsWith("true"))
+					carBusPoliceTerminals.get(1).setWorking(true);
+				else
+					carBusPoliceTerminals.get(1).setWorking(false);
+			}
+			else if(terminal.trim().startsWith("truckPoliceTerminal0")){
+				if(terminal.trim().endsWith("true"))
+					truckPoliceTerminal.setWorking(true);
+				else
+					truckPoliceTerminal.setWorking(false);
+			}
+			else if(terminal.trim().startsWith("carBusCustomsTerminal")){
+				if(terminal.trim().endsWith("true"))
+					carBusCustomsTerminal.setWorking(true);
+				else
+					carBusCustomsTerminal.setWorking(false);
+			}
+			else if(terminal.trim().startsWith("truckCustomsTerminal")){
+				if(terminal.trim().endsWith("true"))
+					truckCustomsTerminal.setWorking(true);
+				else
+					truckCustomsTerminal.setWorking(false);
+			}
+		}
+	}
+	
 	private void createPositions() {
 		for(int i = 0;i<5; i++) {
 			linePositions.add(new LinePosition());
@@ -240,7 +292,12 @@ public class Border extends Task<Position>{
 			this.updateValue(arg2);
 		}));
 		
-		
+		// filewatcher for checking state of terminal
+		FileWatcher fw = new FileWatcher();
+		fw.setUpdateStatusConsumer(e -> updateTerminalStatus(e));
+		fw.setDaemon(true);
+		fw.start();
+		// starting cars
 		while(!this.vehicles.isEmpty()) {
 			if(this.linePositions.get(0).isTaken() == false) {
 				Thread t = new Thread(this.vehicles.poll());
@@ -250,38 +307,12 @@ public class Border extends Task<Position>{
 			}
 			Thread.sleep(100);
 		}
+		//=================================================//
 		
 		return this.vehicles.peek().getCurrentPosition();
 	}
 	//============================================
 
-	/**
-	 * @return the linePositions
-	 */
-	public List<Position> getLinePositions() {
-		return linePositions;
-	}
-
-	/**
-	 * @param linePositions the linePositions to set
-	 */
-	public void setLinePositions(List<Position> linePositions) {
-		this.linePositions = linePositions;
-	}
-
-	/**
-	 * @return the carBusPoliceTerminals
-	 */
-	public List<Position> getCarBusPoliceTerminals() {
-		return carBusPoliceTerminals;
-	}
-
-	/**
-	 * @param carBusPoliceTerminals the carBusPoliceTerminals to set
-	 */
-	public void setCarBusPoliceTerminals(List<Position> carBusPoliceTerminals) {
-		this.carBusPoliceTerminals = carBusPoliceTerminals;
-	}
 
 	/**
 	 * @return the carBusCustomsTerminal

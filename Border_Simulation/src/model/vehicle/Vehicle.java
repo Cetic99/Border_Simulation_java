@@ -13,6 +13,8 @@ import model.passenger.BusPassenger;
 import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 import model.position.CarBusCustomsTerminal;
+import model.position.CarBusPoliceTerminal;
+import model.position.LinePosition;
 import model.position.Position;
 import model.position.TruckCustomsTerminal;
 import model.position.TruckPoliceTerminal;
@@ -39,8 +41,8 @@ public abstract class Vehicle extends Task<Position> {
 	/*
 	 * All positions on Border
 	 */
-	private List<Position> linePositions;
-	private List<Position> carBusPoliceTerminals;
+	private List<LinePosition> linePositions;
+	private List<CarBusPoliceTerminal> carBusPoliceTerminals;
 	private CarBusCustomsTerminal carBusCustomsTerminal;
 	private TruckPoliceTerminal truckPoliceTerminal;
 	private TruckCustomsTerminal truckCustomsTerminal;
@@ -179,7 +181,7 @@ public abstract class Vehicle extends Task<Position> {
 			if(this.currentPosition != null) {
 				this.currentPosition.releasePosition();
 				this.oldPosition.updateImage();
-				this.updateValue(this.currentPosition);
+				//this.updateValue(this.oldPosition);
 				
 			}
 			// update current
@@ -189,7 +191,7 @@ public abstract class Vehicle extends Task<Position> {
 		else if(this.currentPosition != null){
 			this.currentPosition.releasePosition();
 			this.currentPosition.updateImage();
-			this.updateValue(this.currentPosition);
+			//this.updateValue(this.currentPosition);
 		}
 		
 	}
@@ -284,30 +286,18 @@ public abstract class Vehicle extends Task<Position> {
 	/**
 	 * @return the linePositions
 	 */
-	public List<Position> getLinePositions() {
+	public List<LinePosition> getLinePositions() {
 		return linePositions;
 	}
 
 	/**
 	 * @param linePositions the linePositions to set
 	 */
-	public void setLinePositions(List<Position> linePositions) {
+	public void setLinePositions(List<LinePosition> linePositions) {
 		this.linePositions = linePositions;
 	}
 
-	/**
-	 * @return the carBusPoliceTerminals
-	 */
-	public List<Position> getCarBusPoliceTerminals() {
-		return carBusPoliceTerminals;
-	}
 
-	/**
-	 * @param carBusPoliceTerminals the carBusPoliceTerminals to set
-	 */
-	public void setCarBusPoliceTerminals(List<Position> carBusPoliceTerminals) {
-		this.carBusPoliceTerminals = carBusPoliceTerminals;
-	}
 
 	/**
 	 * @return the carBusCustomsTerminal
@@ -423,6 +413,20 @@ public abstract class Vehicle extends Task<Position> {
 				", Passengers names: " + otherPassengers;
 		
 		return retString;
+	}
+
+	/**
+	 * @return the carBusPoliceTerminals
+	 */
+	public List<CarBusPoliceTerminal> getCarBusPoliceTerminals() {
+		return carBusPoliceTerminals;
+	}
+
+	/**
+	 * @param carBusPoliceTerminals the carBusPoliceTerminals to set
+	 */
+	public void setCarBusPoliceTerminals(List<CarBusPoliceTerminal> carBusPoliceTerminals) {
+		this.carBusPoliceTerminals = carBusPoliceTerminals;
 	}
 
 }
