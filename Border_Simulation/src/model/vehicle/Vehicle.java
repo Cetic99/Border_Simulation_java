@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import java.util.ArrayList;
 public abstract class Vehicle extends Task<Position> {
 
+	public static boolean RUN = true;
 	/*
 	 * Stores passengers in Vehicle
 	 */
@@ -186,7 +187,8 @@ public abstract class Vehicle extends Task<Position> {
 			}
 			// update current
 			this.setCurrentPosition(nextPos);
-			this.updateValue(this.currentPosition);
+			this.currentPosition.updateImage();
+			//this.updateValue(this.currentPosition);
 		}
 		else if(this.currentPosition != null){
 			this.currentPosition.releasePosition();
@@ -200,6 +202,12 @@ public abstract class Vehicle extends Task<Position> {
 		Position nextPosition = null;
 		int i = 0;
 		while (i < 5) {
+			if(RUN == false)
+			{
+				this.setImage(null);
+				this.currentPosition.updateImage();
+				return;
+			}
 			oldLock = newLock;
 			nextPosition = this.linePositions.get(i);
 			newLock = nextPosition.getLock();

@@ -67,6 +67,12 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		this.getCurrentPosition().updateImage();
 //		this.updateValue(this.getCurrentPosition());
 		this.oldLock.unlock();
+		if(Vehicle.RUN == false) {
+			this.newLock.unlock();
+			this.setImage(null);
+			this.getCurrentPosition().updateImage();
+			return -1;
+		}
 		try {
 			Thread.sleep(this.getPtTime() * this.getPassengers().size());
 		} catch (InterruptedException e) {
@@ -102,6 +108,12 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		this.getCurrentPosition().updateImage();
 		//this.updateValue(this.getCurrentPosition());
 		this.oldLock.unlock();
+		if(Vehicle.RUN == false) {
+			this.newLock.unlock();
+			this.setImage(null);
+			this.getCurrentPosition().updateImage();
+			return -1;
+		}
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {

@@ -1,3 +1,0 @@
-BussPassenger 28
-CAR::Driver 15 did not have valid id! CAR:: Drivers name: , Passengers names: , Passenger 4, Passenger 5, Passenger 6
-BussPassenger 68

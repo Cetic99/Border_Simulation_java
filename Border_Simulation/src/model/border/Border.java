@@ -32,6 +32,7 @@ import controller.watcher.*;
 
 public class Border extends Task<Position>{
 	
+	public static boolean RUN = true;
 	private static String PUNISHED_PERSON_OBJECTS = "punished_persons.tmp";
 	private static String DID_NOT_CROSS_BORDER = "did_not_cross_border.txt";
 	
@@ -166,6 +167,7 @@ public class Border extends Task<Position>{
 		}
 	}
 	
+	
 	private void createPositions() {
 		for(int i = 0;i<5; i++) {
 			linePositions.add(new LinePosition());
@@ -287,7 +289,6 @@ public class Border extends Task<Position>{
 	protected Position call() throws Exception {
 		// TODO Auto-generated method stub
 		
-		
 		this.vehicles.stream().forEach(e -> e.valueProperty().addListener((arg0, arg1, arg2) -> {
 			this.updateValue(arg2);
 		}));
@@ -297,8 +298,15 @@ public class Border extends Task<Position>{
 		fw.setUpdateStatusConsumer(e -> updateTerminalStatus(e));
 		fw.setDaemon(true);
 		fw.start();
+		// allow vehicle thread to run
+		Vehicle.RUN = true;
+		
 		// starting cars
 		while(!this.vehicles.isEmpty()) {
+			if(Border.RUN == false) {
+				fw.interrupt();
+				break;
+			}
 			if(this.linePositions.get(0).isTaken() == false) {
 				Thread t = new Thread(this.vehicles.poll());
 				t.setPriority(3);
@@ -367,7 +375,19 @@ public class Border extends Task<Position>{
 	public void setPunishedTrucks(CopyOnWriteArrayList<TruckVehicle> punishedTrucks) {
 		this.punishedTrucks = punishedTrucks;
 	}
-
-
+	
+	/*
+	 * This function is called when you want to stop simulation
+	 */
+	public void stop() {
+		Vehicle.RUN = false;
+		try {
+			Thread.sleep(200);
+		}catch(InterruptedException e ) {
+			
+		}
+		this.close();
+		Border.RUN = false;
+	}
 
 }

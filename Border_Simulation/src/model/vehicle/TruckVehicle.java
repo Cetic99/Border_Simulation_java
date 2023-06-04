@@ -64,6 +64,12 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		this.getCurrentPosition().updateImage();
 		//this.updateValue(this.getCurrentPosition());
 		this.oldLock.unlock();
+		if(Vehicle.RUN == false) {
+			this.newLock.unlock();
+			this.setImage(null);
+			this.getCurrentPosition().updateImage();
+			return -1;
+		}
 		try {
 			Thread.sleep(this.getPtTime() * this.getPassengers().size());
 		} catch (InterruptedException e) {
@@ -93,6 +99,12 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		moveForward(this.getTruckCustomsTerminal());
 		this.updateValue(this.getCurrentPosition());
 		this.oldLock.unlock();
+		if(Vehicle.RUN == false) {
+			this.newLock.unlock();
+			this.setImage(null);
+			this.getCurrentPosition().updateImage();
+			return -1;
+		}
 
 		try {
 			Thread.sleep(this.getCtTime());

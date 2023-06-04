@@ -19,6 +19,7 @@ public class FileWatcher extends Thread{
 
 	
 	private Consumer<List<String>> updateStatusConsumer;
+	
 	@Override
 	public void run() {
 		try {
