@@ -1,16 +1,18 @@
 package model.passenger;
 
+import java.io.Serializable;
+
 import model.PassengerID;
 import model.vehicle.BusVehicle;
 import model.vehicle.PersonalVehicle;
 import model.vehicle.Vehicle;
 
-public class DriverPassenger extends Passenger{
+public class DriverPassenger extends Passenger implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	public static Integer numDrivers = 0;
 	
-	private Vehicle vehicle;
+	private transient Vehicle vehicle;
 	/*------ constructors -----------------*/
 	public DriverPassenger() {
 		super("Driver",numDrivers.toString());

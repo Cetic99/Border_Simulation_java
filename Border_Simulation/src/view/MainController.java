@@ -91,7 +91,6 @@ public class MainController implements Initializable {
 				Main.border = new Border(column4, column3, column2, column1, column0, p1, p2, c1, pk, ck);
 				Border.RUN = true;
 				startStopButton.setText("STOP");
-				System.out.println("Starting");
 				Thread t = new Thread(Main.border);
 				t.setPriority(9);
 				t.setDaemon(true);
@@ -132,7 +131,8 @@ public class MainController implements Initializable {
 					allVehiclesController = loader.getController();
 					allVehiclesController.setVehicles(Main.border.getAllVehicles());
 					stage = new Stage();
-
+					stage.setTitle("All Vehicles");
+					
 					Scene scene = new Scene(root);
 					stage.setScene(scene);
 					stage.show();
@@ -158,7 +158,6 @@ public class MainController implements Initializable {
 	public void exit() {
 		if (Main.border != null)
 			Main.border.close();
-		System.out.println("Closing");
 	}
 
 }

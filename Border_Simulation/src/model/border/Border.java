@@ -271,10 +271,11 @@ public class Border extends Task<Position> implements Serializable{
 			punishedPersons.stream().forEach(e -> {
 				String output  = e.toString();
 				if(e instanceof DriverPassenger) {
-					output = output +" did not have valid id! "+ ((DriverPassenger) e).getVehicle().toString();
+					output = output +" did not have valid id! "+ System.lineSeparator() +((DriverPassenger) e).getVehicle().toString();
 				}
 				try {
 					br.write(output);
+					br.newLine();
 					br.newLine();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -285,6 +286,7 @@ public class Border extends Task<Position> implements Serializable{
 			punishedTrucks.stream().forEach(e -> {
 				try {
 					br.write(e.toString());
+					br.newLine();
 					br.newLine();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block

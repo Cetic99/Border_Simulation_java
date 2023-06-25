@@ -1,11 +1,12 @@
 package model.passenger;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import model.PassengerID;
 import model.Suitcase;
 
-public class BusPassenger extends Passenger{
+public class BusPassenger extends Passenger implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private Suitcase suitcase = null;

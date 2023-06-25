@@ -11,7 +11,7 @@ public class PassengerID implements Serializable{
 	private String name;
 	private String surname;
 	private boolean valid;
-	private static Random rand = new Random();
+	private transient static Random rand = new Random();
 	
 	
 	public PassengerID(String name, String surname) {

@@ -1,0 +1,18 @@
+BussPassenger 145
+
+BussPassenger 158
+
+BussPassenger 166
+
+BussPassenger 172
+
+BussPassenger 33
+
+BussPassenger 35
+
+Vehicle Type: TRUCK
+Drivers name: TRUCK::Driver 14
+Passengers names: 
+Declared Weight: 2690.32443246497
+Real Weight:     2715.5345371033454
+

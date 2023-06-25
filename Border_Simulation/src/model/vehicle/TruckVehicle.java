@@ -171,7 +171,6 @@ public class TruckVehicle extends Vehicle implements Serializable{
 	private int createCustomsDocumentation() {
 		if(this.getRealWeight() > this.getDeclaredWeight()) {
 			this.customsDoc.accept(this);
-			System.out.println("Overweight");
 			moveForward(null);
 			this.newLock.unlock();
 			return -1;

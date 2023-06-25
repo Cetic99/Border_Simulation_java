@@ -34,16 +34,20 @@ public class AllVehicles implements Initializable{
     
     private static Logger log;
     
-	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
-		
-		try {
+    static {
+    	try {
 			log = Logger.getLogger(AllVehicles.class.getName());
 			log.addHandler(new FileHandler("AllVehicles"));
 		} catch (SecurityException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+    }
+    
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		
 		
 		
 	}
@@ -55,7 +59,6 @@ public class AllVehicles implements Initializable{
 	public List<Vehicle> getVehicles() {
 		return vehicles;
 	}
-
 	/**
 	 * @param vehicles the vehicles to set
 	 */
@@ -75,6 +78,7 @@ public class AllVehicles implements Initializable{
 						rInfo = loader.getController();
 						rInfo.setText(map.get(iv).getRelevantInfo());
 						stage = new Stage();
+						stage.setTitle("Vehicle Info");
 
 						Scene scene = new Scene(root);
 						stage.setScene(scene);

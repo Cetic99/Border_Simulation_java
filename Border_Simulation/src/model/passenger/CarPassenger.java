@@ -1,6 +1,8 @@
 package model.passenger;
 
-public class CarPassenger extends Passenger{
+import java.io.Serializable;
+
+public class CarPassenger extends Passenger implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	public static Integer numCarPassengers = 0;

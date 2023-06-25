@@ -27,7 +27,6 @@ public class FileWatcher extends Thread{
 			Path dir = Paths.get("src"+ File.separator+"model"+File.separator+"border");
 			dir.register(watcher,ENTRY_MODIFY);
 
-			System.out.println("Watch Service registered for dir: " + dir.getFileName());
 
 			while (true) {
 				WatchKey key;

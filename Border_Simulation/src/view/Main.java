@@ -31,6 +31,7 @@ public class Main extends Application {
 			controller = loader.getController();
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
+			primaryStage.setTitle("Border Simulation");
 			primaryStage.show();
 			
 			primaryStage.setOnCloseRequest(e -> {
