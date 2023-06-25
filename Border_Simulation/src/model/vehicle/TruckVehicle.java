@@ -2,6 +2,7 @@ package model.vehicle;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -11,6 +12,12 @@ import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 
 public class TruckVehicle extends Vehicle implements Serializable{
+	
+	private static String IMAGE_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck.png";
+	private static String IMAGE_DIDNT_PASS_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck_didnt_pass.png";
+	private static String IMAGE_PASSED_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck_passed.png";
+	private static String IMAGE_INCIDENT_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck_had_incident.png";
+	
 
 	private static final long serialVersionUID = 1L;
 	private double declaredWeight = 0;
@@ -29,7 +36,10 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		/**
 		 * Setting image for Bus
 		 */
-		this.setImage(new Image("file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck.png"));
+		this.setImage(new Image(IMAGE_PATH));
+		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
+		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
+		this.setDidntPassImage(new Image(IMAGE_INCIDENT_PATH));
 		
 		this.setCtTime(500);
 		this.setPtTime(500);
@@ -43,7 +53,10 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		/**
 		 * Setting image for Bus
 		 */
-		this.setImage(new Image("file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"truck.png"));
+		this.setImage(new Image(IMAGE_PATH));
+		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
+		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
+		this.setDidntPassImage(new Image(IMAGE_INCIDENT_PATH));
 		
 		this.setCtTime(500);
 		this.setPtTime(500);
@@ -75,17 +88,28 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		List<Passenger> toBeRemoved = new ArrayList<>();
 		for (Passenger p : this.getPassengers()) {
 			if (p.getId().isValid() == false) {
 				punishPassenger(p);
-				this.getPassengers().remove(p);
+				toBeRemoved.add(p);
 				if (p instanceof DriverPassenger) {
+					this.getIncidentStatus().add("Driver "+ p.toString()+ " didn't have valid ID and bus couldn't cross border");
+					this.setHavingIncident(true);
 					moveForward(null);
+					this.getPassengers().removeAll(toBeRemoved);
 					this.newLock.unlock();
 					return -1;
 				}
+				else {
+					this.getIncidentStatus().add("Passenger "+ p.toString()+ " didn't have valid ID");
+					this.setHavingIncident(true);
+				}
 			}
 		}
+		
+		this.getPassengers().removeAll(toBeRemoved);
 		return 0;
 
 	}
@@ -112,8 +136,12 @@ public class TruckVehicle extends Vehicle implements Serializable{
 			e.printStackTrace();
 		}
 		if(this.isNeededCustoms()) {
-			if(createCustomsDocumentation() == -1)
+			if(createCustomsDocumentation() == -1) {
+				this.getIncidentStatus().add("Truck is overweight and couldn't cross border");
+				this.setHavingIncident(true);
 				return -1;
+			}
+				
 		}
 		
 		this.newLock.unlock();

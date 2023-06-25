@@ -14,9 +14,16 @@ import model.position.Position;
 import model.passenger.DriverPassenger;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class BusVehicle extends Vehicle{
+public class BusVehicle extends Vehicle implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+	private static String IMAGE_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"bus.jpg";
+	private static String IMAGE_DIDNT_PASS_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"bus_didnt_pass.png";
+	private static String IMAGE_PASSED_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"bus_passed.png";
+	private static String IMAGE_INCIDENT_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"bus_had_incident.png";
 
 	private Set<Suitcase> cargo = null;
 	
@@ -35,7 +42,10 @@ public class BusVehicle extends Vehicle{
 		/**
 		 * Setting image for Bus
 		 */
-		this.setImage(new Image("file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"bus.jpg"));
+		this.setImage(new Image(IMAGE_PATH));
+		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
+		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
+		this.setIncidentImage(new Image(IMAGE_INCIDENT_PATH));
 		
 		this.setCtTime(100);
 		this.setPtTime(100);
@@ -53,7 +63,10 @@ public class BusVehicle extends Vehicle{
 		/**
 		 * Setting image for Bus
 		 */
-		this.setImage(new Image("file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"bus.jpg"));
+		this.setImage(new Image(IMAGE_PATH));
+		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
+		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
+		this.setIncidentImage(new Image(IMAGE_INCIDENT_PATH));
 		
 		this.setCtTime(100);
 		this.setPtTime(100);
@@ -102,12 +115,18 @@ public class BusVehicle extends Vehicle{
 			if (p.getId().isValid() == false) {
 				// punish person
 				punishPassenger(p);
+				
 				toBeRemoved.add(p);
 				if(p instanceof BusPassenger) {
 					this.cargo.remove(((BusPassenger)p).getSuitcase());
+					this.getIncidentStatus().add("Passenger "+p.toString()+ " didn't have valid ID");
+					this.setHavingIncident(true);
 				}
 				else if (p instanceof DriverPassenger) {
+					this.getIncidentStatus().add("Driver "+p.toString()+ " didn't have valid ID and bus couldn't cross border");
+					this.setHavingIncident(true);
 					moveForward(null);
+					this.getPassengers().removeAll(toBeRemoved);
 					this.newLock.unlock();
 					return -1;
 				}

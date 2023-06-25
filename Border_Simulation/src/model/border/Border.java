@@ -20,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,8 +31,9 @@ import java.io.File;
 import java.io.FileWriter;
 import controller.watcher.*;
 
-public class Border extends Task<Position>{
+public class Border extends Task<Position> implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
 	public static boolean RUN = true;
 	private static String PUNISHED_PERSON_OBJECTS = "punished_persons.tmp";
 	private static String DID_NOT_CROSS_BORDER = "did_not_cross_border.txt";
@@ -41,6 +43,7 @@ public class Border extends Task<Position>{
 	private int numPersonalVehicles = 35;
 	
 	private Queue<Vehicle> vehicles = null;
+	private List<Vehicle> allVehicles = null;
 	
 	private List<LinePosition> linePositions = new ArrayList<>();
 	private List<CarBusPoliceTerminal> carBusPoliceTerminals = new ArrayList<>();
@@ -94,6 +97,7 @@ public class Border extends Task<Position>{
 			e.setTruckCustomsTerminal(truckCustomsTerminal);
 			e.setTruckPoliceTerminal(truckPoliceTerminal);
 		});
+		allVehicles = new ArrayList<Vehicle>(vehicles);
 	}
 	
 	private void associateImageViewToPosition(ImageView line1,
@@ -376,6 +380,9 @@ public class Border extends Task<Position>{
 		this.punishedTrucks = punishedTrucks;
 	}
 	
+	public Queue<Vehicle> getVehicles(){
+		return this.vehicles;
+	}
 	/*
 	 * This function is called when you want to stop simulation
 	 */
@@ -388,6 +395,18 @@ public class Border extends Task<Position>{
 		}
 		this.close();
 		Border.RUN = false;
+	}
+	/**
+	 * @return the allVehicles
+	 */
+	public List<Vehicle> getAllVehicles() {
+		return allVehicles;
+	}
+	/**
+	 * @param allVehicles the allVehicles to set
+	 */
+	public void setAllVehicles(List<Vehicle> allVehicles) {
+		this.allVehicles = allVehicles;
 	}
 
 }

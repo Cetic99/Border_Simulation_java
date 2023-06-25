@@ -1,0 +1,10 @@
+BussPassenger 11
+BussPassenger 17
+BussPassenger 35
+BussPassenger 65
+BussPassenger 69
+Passenger 19
+BussPassenger 100
+BussPassenger 102
+Passenger 6
+TRUCK:: Drivers name: TRUCK::Driver 9, Passengers names: , Passenger 2DeclaredWeight: 3183.0492705937763,RealWeight: 3594.192389939554

@@ -2,12 +2,20 @@ package view;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.ArrayList;
 
+import javafx.stage.Stage;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import model.border.Border;
+import model.vehicle.Vehicle;
+
 import java.util.Queue;
 public class MainController implements Initializable {
 
@@ -45,7 +53,10 @@ public class MainController implements Initializable {
     private Button startStopButton;
     private boolean running = false;
     
-    Border border;
+    @FXML
+    private Button statusButton;
+    public static AllVehicles allVehiclesController;
+    private Stage stage;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -54,11 +65,11 @@ public class MainController implements Initializable {
 		
 		startStopButton.setOnMouseClicked(event -> {
 			if(running == false) {
-				border = new Border(column4,column3,column2,column1,column0,p1,p2,c1,pk,ck);
+				Main.border = new Border(column4,column3,column2,column1,column0,p1,p2,c1,pk,ck);
 				Border.RUN = true;
 				startStopButton.setText("STOP");
 				System.out.println("Starting");
-				Thread t = new Thread(border);
+				Thread t = new Thread(Main.border);
 				t.setPriority(9);
 				t.setDaemon(true);
 				t.start();
@@ -66,7 +77,7 @@ public class MainController implements Initializable {
 			}
 			else {
 				startStopButton.setText("START");
-				border.stop();
+				Main.border.stop();
 				try {
 					Thread.sleep(100);
 				}
@@ -77,12 +88,34 @@ public class MainController implements Initializable {
 			}
 		});
 		
+		
+		statusButton.setOnMouseClicked(event -> {
+			try {
+				
+				FXMLLoader loader = new FXMLLoader();
+				Parent root = loader.load(getClass().getResourceAsStream("AllVehicles.fxml"));
+				allVehiclesController = loader.getController();
+				allVehiclesController.setVehicles(Main.border.getAllVehicles());
+				stage = new Stage();
+				
+				Scene scene = new Scene(root);
+				stage.setScene(scene);
+				stage.show();
+				
+			
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		});
+		
+		
 	}
 	
 
 	
 	public void exit() {
-		border.close();
+		if(Main.border != null)
+			Main.border.close();
 		System.out.println("Closing");
 	}
 

@@ -1,9 +1,6 @@
 package model.vehicle;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 
@@ -18,11 +15,12 @@ import model.position.LinePosition;
 import model.position.Position;
 import model.position.TruckCustomsTerminal;
 import model.position.TruckPoliceTerminal;
+import view.MainController;
 
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.*;
 import java.util.function.Consumer;
 import java.util.ArrayList;
+
 public abstract class Vehicle extends Task<Position> {
 
 	public static boolean RUN = true;
@@ -38,6 +36,10 @@ public abstract class Vehicle extends Task<Position> {
 	 * Stores image that will be shown on GUI
 	 */
 	private Image image = null;
+	private Image didntPassImage = null;
+	private Image passedImage = null;
+	private Image incidentImage = null;
+	
 
 	/*
 	 * All positions on Border
@@ -66,9 +68,14 @@ public abstract class Vehicle extends Task<Position> {
 	private long ptTime,ctTime;
 	
 	/*
-	 * Punishment rocessing consumer 
+	 * Punishment processing consumer 
 	 */
 	private Consumer<Passenger> punishmentConsumer = null;
+	
+	private boolean crossedBorder = false;
+	private boolean havingIncident = false;
+	private boolean moving = true;
+	private List<String> incidentStatus = new ArrayList<String>();
 	
 
 
@@ -117,50 +124,29 @@ public abstract class Vehicle extends Task<Position> {
 		
 		lineMoving();
 		
-			
-			// police terminal
-//			oldLock = newLock;
-//			newLock = this.truckPoliceTerminal.getLock();
-//			newLock.lock();
-//			moveForward(this.truckPoliceTerminal);
-//			this.updateValue(this.currentPosition);
-//			oldLock.unlock();
-//			Thread.sleep(ptTime*this.passengers.size());
-//			for(Passenger p : passengers) {
-//				if(p.getId().isValid() == false) {
-//					punishPassenger(p);
-//					passengers.remove(p);
-//					if(p instanceof DriverPassenger) {
-//						this.currentPosition.releasePosition();
-//						this.updateValue(this.currentPosition);
-//						newLock.unlock();
-//						return this.currentPosition;
-//					}
-//				}
-//			}
 			if(policeTerminalProcess() == 0) {
 				if(customsTerminalProcess()== 0) {
 					// successfully crossed the border
+					this.setCrossedBorder(true);
+					this.setMoving(false);
 				}
 				else {
 					// failed on customs terminal
+					this.setCrossedBorder(false);
+					this.setMoving(false);
 				}
 			}
 			else {
 				// failed on police terminal
+				this.setCrossedBorder(false);
+				this.setMoving(false);
 			}
+			
 			moveForward(null);
-//			// customs terminal
-//			oldLock = newLock;
-//			newLock = this.truckCustomsTerminal.getLock();
-//			newLock.lock();
-//			moveForward(this.truckCustomsTerminal);
-//			this.updateValue(this.currentPosition);
-//			oldLock.unlock();
-//			Thread.sleep(ctTime*this.passengers.size());
-//			customsTerminalProcess();
-//			Thread.sleep(10000);
-
+			this.oldLock.unlock();
+			this.newLock.unlock();
+			
+			this.setMoving(false);
 
 		return this.getCurrentPosition();
 	}
@@ -435,6 +421,106 @@ public abstract class Vehicle extends Task<Position> {
 	 */
 	public void setCarBusPoliceTerminals(List<CarBusPoliceTerminal> carBusPoliceTerminals) {
 		this.carBusPoliceTerminals = carBusPoliceTerminals;
+	}
+
+	/**
+	 * @return the didntPassImage
+	 */
+	public Image getDidntPassImage() {
+		return didntPassImage;
+	}
+
+	/**
+	 * @param didntPassImage the didntPassImage to set
+	 */
+	public void setDidntPassImage(Image didntPassImage) {
+		this.didntPassImage = didntPassImage;
+	}
+
+	/**
+	 * @return the passedImage
+	 */
+	public Image getPassedImage() {
+		return passedImage;
+	}
+
+	/**
+	 * @param passedImage the passedImage to set
+	 */
+	public void setPassedImage(Image passedImage) {
+		this.passedImage = passedImage;
+	}
+
+
+
+	/**
+	 * @return the havingIncident
+	 */
+	public boolean isHavingIncident() {
+		return havingIncident;
+	}
+
+	/**
+	 * @param havingIncident the havingIncident to set
+	 */
+	public void setHavingIncident(boolean havingIncident) {
+		this.havingIncident = havingIncident;
+	}
+
+	/**
+	 * @return the incidentImage
+	 */
+	public Image getIncidentImage() {
+		return incidentImage;
+	}
+
+	/**
+	 * @param incidentImage the incidentImage to set
+	 */
+	public void setIncidentImage(Image incidentImage) {
+		this.incidentImage = incidentImage;
+	}
+
+	/**
+	 * @return the moving
+	 */
+	public boolean isMoving() {
+		return moving;
+	}
+
+	/**
+	 * @param moving the moving to set
+	 */
+	public void setMoving(boolean moving) {
+		this.moving = moving;
+	}
+
+	/**
+	 * @return the incidentStatus
+	 */
+	public List<String> getIncidentStatus() {
+		return incidentStatus;
+	}
+
+	/**
+	 * @param incidentStatus the incidentStatus to set
+	 */
+	public void setIncidentStatus(List<String> incidentStatus) {
+		this.incidentStatus = incidentStatus;
+	}
+
+	/**
+	 * @return the crossedBorder
+	 */
+	public boolean isCrossedBorder() {
+		return crossedBorder;
+	}
+
+	/**
+	 * @param crossedBorder the crossedBorder to set
+	 */
+	public void setCrossedBorder(boolean crossedBorder) {
+		this.crossedBorder = crossedBorder;
 	}
 
 }

@@ -3,6 +3,7 @@ package view;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import model.border.Border;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,7 +12,8 @@ import javafx.scene.Parent;
 
 public class Main extends Application {
 	
-	MainController controller;
+	public static MainController controller;
+	public static Border border;
 	@Override
 	public void start(Stage primaryStage) {
 		try {
