@@ -1,5 +1,10 @@
 package view;
 	
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -14,6 +19,9 @@ public class Main extends Application {
 	
 	public static MainController controller;
 	public static Border border;
+	
+	private static Logger log;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -30,11 +38,19 @@ public class Main extends Application {
 				Platform.exit();
 			});
 		} catch(Exception e) {
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 	}
 	
 	public static void main(String[] args) {
+			try {
+				log = Logger.getLogger(Main.class.getName());
+				log.addHandler(new FileHandler("Main.log"));
+			} catch (SecurityException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		launch(args);
 	}
 }

@@ -17,6 +17,9 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -58,6 +61,9 @@ public class Border extends Task<Position> implements Serializable{
 	private CopyOnWriteArrayList<Passenger> punishedPersons = new CopyOnWriteArrayList<>();
 	private CopyOnWriteArrayList<TruckVehicle> punishedTrucks = new CopyOnWriteArrayList<>();
 	
+	
+	private static Logger log;
+	
 	/*------------ Constructors --------------------*/
 	private Border() {
 		/*
@@ -70,6 +76,14 @@ public class Border extends Task<Position> implements Serializable{
 		this.createVehicles();
 		
 		this.notifyVehiclesAboutPositions();
+		
+		try {
+			log = Logger.getLogger(Border.class.getName());
+			log.addHandler(new FileHandler("Border.log"));
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 	public Border(ImageView line1,
@@ -132,7 +146,7 @@ public class Border extends Task<Position> implements Serializable{
 			updateTerminalStatus(lines);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 	}
 	
@@ -244,11 +258,11 @@ public class Border extends Task<Position> implements Serializable{
 				oos.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.WARNING,e.fillInStackTrace().toString());
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 	}
 	
@@ -264,7 +278,7 @@ public class Border extends Task<Position> implements Serializable{
 					br.newLine();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					log.log(Level.WARNING,e1.fillInStackTrace().toString());
 				}
 				
 			});
@@ -274,13 +288,13 @@ public class Border extends Task<Position> implements Serializable{
 					br.newLine();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					log.log(Level.WARNING,e1.fillInStackTrace().toString());
 				}
 				
 			});
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 	}
 	
@@ -396,7 +410,7 @@ public class Border extends Task<Position> implements Serializable{
 		try {
 			Thread.sleep(200);
 		}catch(InterruptedException e ) {
-			
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 		this.close();
 		Border.RUN = false;

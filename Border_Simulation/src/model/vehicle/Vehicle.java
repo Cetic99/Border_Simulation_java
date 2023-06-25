@@ -17,6 +17,10 @@ import view.MainController;
 
 import java.util.concurrent.locks.*;
 import java.util.function.Consumer;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -82,6 +86,17 @@ public abstract class Vehicle extends Task<Position> implements Serializable{
 	 * For stopping timer
 	 */
 	private boolean finish = false;
+	
+	private static Logger log;
+	static{
+		try {
+			log = Logger.getLogger(Vehicle.class.getName());
+			log.addHandler(new FileHandler("Vehicle_log/Vehicle.log"));
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	{
 		incidentStatus.add(System.lineSeparator() + "=======================" + System.lineSeparator() + "Incidents:");
@@ -89,11 +104,12 @@ public abstract class Vehicle extends Task<Position> implements Serializable{
 
 	/*----------------- Constructors --------------------*/
 	public Vehicle(List<? extends Passenger> passengers) {
+		this();
 		this.passengers = passengers;
+		
 	}
 
 	public Vehicle() {
-
 	}
 	
 	/*---------------------------------------------------*/
@@ -198,7 +214,7 @@ public abstract class Vehicle extends Task<Position> implements Serializable{
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.WARNING,e.fillInStackTrace().toString());
 			}
 
 		}

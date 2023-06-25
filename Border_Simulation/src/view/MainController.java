@@ -1,7 +1,11 @@
 package view;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.ArrayList;
 
 import javafx.stage.Stage;
@@ -21,6 +25,7 @@ import model.border.Border;
 import model.vehicle.Vehicle;
 
 import java.util.Queue;
+
 
 public class MainController implements Initializable {
 
@@ -69,12 +74,17 @@ public class MainController implements Initializable {
 	
 	public static Timeline timeline;
 	private int seconds = 0;
-
+	
+	private static Logger log;
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
-		// border.valueProperty().addListener((observable, oldValue, newValue) ->
-		// newValue.updateImage());
+		try {
+			log = Logger.getLogger(MainController.class.getName());
+			log.addHandler(new FileHandler("MainController.log"));
+		} catch (SecurityException | IOException e) {
+			e.printStackTrace();
+		}
 
 		startStopButton.setOnMouseClicked(event -> {
 			if (running == false) {
@@ -106,8 +116,8 @@ public class MainController implements Initializable {
 				Main.border.stop();
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
-
+				} catch (Exception e) {
+					log.log(Level.WARNING,e.fillInStackTrace().toString());
 				}
 				running = false;
 			}
@@ -130,7 +140,7 @@ public class MainController implements Initializable {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.log(Level.WARNING,e.fillInStackTrace().toString());
 			}
 		});
 

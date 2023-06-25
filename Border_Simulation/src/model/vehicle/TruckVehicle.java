@@ -1,16 +1,21 @@
 package model.vehicle;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.scene.image.Image;
 import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
+import view.Main;
 
 public class TruckVehicle extends Vehicle implements Serializable{
 	
@@ -27,13 +32,26 @@ public class TruckVehicle extends Vehicle implements Serializable{
 	
 	private Consumer<TruckVehicle> customsDoc;
 	
+	private static Logger log;
+	
+	static{
+		try {
+			log = Logger.getLogger(Main.class.getName());
+			log.addHandler(new FileHandler("Truck_log/TruckVehicle.log"));
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	{
 		this.setCapacity(3);
 	}
 	
 	public TruckVehicle(List<Passenger> passengers) {
 		super(passengers);
-		// TODO Auto-generated constructor stub
+		
+		
 		/**
 		 * Setting image for Bus
 		 */
@@ -87,7 +105,7 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		try {
 			Thread.sleep(this.getPtTime() * this.getPassengers().size());
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 		
 		List<Passenger> toBeRemoved = new ArrayList<>();
@@ -134,7 +152,7 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		try {
 			Thread.sleep(this.getCtTime());
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 		if(this.isNeededCustoms()) {
 			if(createCustomsDocumentation() == -1) {

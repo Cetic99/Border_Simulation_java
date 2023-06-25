@@ -3,6 +3,7 @@ module Border_Simulation {
 	requires javafx.graphics;
 	requires javafx.fxml;
 	requires javafx.base;
+	requires java.logging;
 	
 	opens view to javafx.graphics, javafx.fxml;
 }

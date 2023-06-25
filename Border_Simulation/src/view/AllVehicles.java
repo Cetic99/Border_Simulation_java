@@ -1,10 +1,14 @@
 package view;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -28,8 +32,19 @@ public class AllVehicles implements Initializable{
     private RelevantInfo rInfo;
     private Stage stage;
     
+    private static Logger log;
+    
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		
+		try {
+			log = Logger.getLogger(AllVehicles.class.getName());
+			log.addHandler(new FileHandler("AllVehicles"));
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 	
@@ -67,7 +82,7 @@ public class AllVehicles implements Initializable{
 
 
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					log.log(Level.WARNING,ex.fillInStackTrace().toString());
 				}
 			});
 		}

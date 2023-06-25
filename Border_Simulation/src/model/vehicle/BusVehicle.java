@@ -1,6 +1,9 @@
 package model.vehicle;
 
 import java.util.Set;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
@@ -14,6 +17,7 @@ import model.position.Position;
 import model.passenger.DriverPassenger;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,11 +39,25 @@ public class BusVehicle extends Vehicle implements Serializable {
 	{
 		this.setCapacity(52);
 	}
+	
+	private static Logger log;
+	
+	static {
+		try {
+			log = Logger.getLogger(BusVehicle.class.getName());
+			log.addHandler(new FileHandler("Bus_log/BusVehicle.log"));
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/*---------- Constructors ------------------*/
 	public BusVehicle(List<BusPassenger> passengers) {
 		super(passengers);
-		// TODO Auto-generated constructor stub
+		
+
+		
 		/**
 		 * Putting passengers suitcase in cargo
 		 */
@@ -57,6 +75,7 @@ public class BusVehicle extends Vehicle implements Serializable {
 	}
 
 	public BusVehicle() {
+	
 		/**
 		 * Create passengers
 		 */
@@ -113,7 +132,7 @@ public class BusVehicle extends Vehicle implements Serializable {
 			Thread.sleep(this.getPtTime() * this.getPassengers().size());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 
 		List<Passenger> toBeRemoved = new ArrayList<>();
@@ -163,7 +182,7 @@ public class BusVehicle extends Vehicle implements Serializable {
 		try {
 			Thread.sleep(this.getCtTime() * this.getPassengers().size());
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 		this.newLock.unlock();
 

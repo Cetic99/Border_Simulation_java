@@ -1,11 +1,15 @@
 package model.vehicle;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.scene.image.Image;
 import model.passenger.BusPassenger;
@@ -13,6 +17,7 @@ import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 import model.position.CarBusPoliceTerminal;
 import model.position.Position;
+import view.Main;
 
 public class PersonalVehicle extends Vehicle implements Serializable {
 
@@ -26,15 +31,29 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 			+ File.separator + "car_had_incident.png";
 
 	private static final long serialVersionUID = 1L;
+	
+	
+	private static Logger log;
 
 	{
 		this.setCapacity(5);
+	}
+	
+	static {
+		try {
+			log = Logger.getLogger(Main.class.getName());
+			log.addHandler(new FileHandler("Car_log/PersonalVehicle.log"));
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*--------------- Constructors ---------------------*/
 	public PersonalVehicle(List<Passenger> passengers) {
 		super(passengers);
-		// TODO Auto-generated constructor stub
+		
+		
 		/**
 		 * Setting image for Bus
 		 */
@@ -96,8 +115,7 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		try {
 			Thread.sleep(this.getPtTime() * this.getPassengers().size());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 
 		List<Passenger> toBeRemoved = new ArrayList<>();
@@ -147,7 +165,7 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			log.log(Level.WARNING,e.fillInStackTrace().toString());
 		}
 		this.newLock.unlock();
 
