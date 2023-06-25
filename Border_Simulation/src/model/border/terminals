@@ -1,5 +1,5 @@
 carBusPoliceTerminal0 = true
-carBusPoliceTerminal1 = false
+carBusPoliceTerminal1 = true
 truckPoliceTerminal0 = true
 carBusCustomsTerminal = true
 truckCustomsTerminal = true

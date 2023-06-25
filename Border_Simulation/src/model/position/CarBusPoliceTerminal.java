@@ -1,5 +1,9 @@
 package model.position;
 
-public class CarBusPoliceTerminal extends PoliceTerminal{
+import java.io.Serializable;
+
+public class CarBusPoliceTerminal extends PoliceTerminal implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 }

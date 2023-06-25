@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import javafx.scene.image.Image;
+import model.passenger.BusPassenger;
 import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 import model.position.CarBusPoliceTerminal;
@@ -14,17 +16,21 @@ import model.position.Position;
 
 public class PersonalVehicle extends Vehicle implements Serializable {
 
-	private static String IMAGE_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"car.png";
-	private static String IMAGE_DIDNT_PASS_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"car_didnt_pass.png";
-	private static String IMAGE_PASSED_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"car_passed.png";
-	private static String IMAGE_INCIDENT_PATH = "file:src"+File.separator+"view"+File.separator+"images"+ File.separator+"car_had_incident.png";
+	private static String IMAGE_PATH = "file:src" + File.separator + "view" + File.separator + "images" + File.separator
+			+ "car.png";
+	private static String IMAGE_DIDNT_PASS_PATH = "file:src" + File.separator + "view" + File.separator + "images"
+			+ File.separator + "car_didnt_pass.png";
+	private static String IMAGE_PASSED_PATH = "file:src" + File.separator + "view" + File.separator + "images"
+			+ File.separator + "car_passed.png";
+	private static String IMAGE_INCIDENT_PATH = "file:src" + File.separator + "view" + File.separator + "images"
+			+ File.separator + "car_had_incident.png";
 
 	private static final long serialVersionUID = 1L;
 
 	{
 		this.setCapacity(5);
 	}
-	
+
 	/*--------------- Constructors ---------------------*/
 	public PersonalVehicle(List<Passenger> passengers) {
 		super(passengers);
@@ -36,10 +42,11 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
 		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
 		this.setIncidentImage(new Image(IMAGE_INCIDENT_PATH));
-		
+
 		this.setCtTime(500);
 		this.setPtTime(500);
 	}
+
 	public PersonalVehicle() {
 		this.createPassengers();
 		/**
@@ -49,10 +56,11 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
 		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
 		this.setIncidentImage(new Image(IMAGE_INCIDENT_PATH));
-		
+
 		this.setCtTime(100);
 		this.setPtTime(100);
 	}
+
 	/*--------------------------------------------------*/
 	@Override
 	public int policeTerminalProcess() {
@@ -60,26 +68,26 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		// police terminal
 		boolean locked = false;
 		List<CarBusPoliceTerminal> terminals = this.getCarBusPoliceTerminals();
-		
+
 		this.oldLock = this.newLock;
-		
-		while(locked == false) {
-			for(CarBusPoliceTerminal p : terminals) {
-				if(p.isWorking()) {
+
+		while (locked == false) {
+			for (CarBusPoliceTerminal p : terminals) {
+				if (p.isWorking()) {
 					locked = p.getLock().tryLock();
 					this.newLock = p.getLock();
-					if(locked == true) {
+					if (locked == true) {
 						moveForward(p);
 						break;
 					}
 				}
-				
+
 			}
 		}
 		this.getCurrentPosition().updateImage();
 //		this.updateValue(this.getCurrentPosition());
 		this.oldLock.unlock();
-		if(Vehicle.RUN == false) {
+		if (Vehicle.RUN == false) {
 			this.newLock.unlock();
 			this.setImage(null);
 			this.getCurrentPosition().updateImage();
@@ -91,24 +99,24 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		List<Passenger> toBeRemoved = new ArrayList<>();
 		for (Passenger p : this.getPassengers()) {
 			if (p.getId().isValid() == false) {
 				// punish person
 				punishPassenger(p);
 				toBeRemoved.add(p);
-				
+
 				if (p instanceof DriverPassenger) {
-					this.getIncidentStatus().add("Driver "+ p.toString()+ " didn't have valid ID and bus couldn't cross border");
+					this.getIncidentStatus()
+							.add("Driver " + p.toString() + " didn't have valid ID and bus couldn't cross border");
 					this.setHavingIncident(true);
 					moveForward(null);
 					this.getPassengers().removeAll(toBeRemoved);
 					this.newLock.unlock();
 					return -1;
-				}
-				else {
-					this.getIncidentStatus().add("Passenger "+ p.toString()+ " didn't have valid ID");
+				} else {
+					this.getIncidentStatus().add("Passenger " + p.toString() + " didn't have valid ID");
 					this.setHavingIncident(true);
 				}
 			}
@@ -123,13 +131,14 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 		// TODO Auto-generated method stub
 		this.oldLock = this.newLock;
 		this.newLock = this.getCarBusCustomsTerminal().getLock();
-		while(!this.getCarBusCustomsTerminal().isWorking());
+		while (!this.getCarBusCustomsTerminal().isWorking())
+			;
 		this.newLock.lock();
 		moveForward(this.getCarBusCustomsTerminal());
 		this.getCurrentPosition().updateImage();
-		//this.updateValue(this.getCurrentPosition());
+		// this.updateValue(this.getCurrentPosition());
 		this.oldLock.unlock();
-		if(Vehicle.RUN == false) {
+		if (Vehicle.RUN == false) {
 			this.newLock.unlock();
 			this.setImage(null);
 			this.getCurrentPosition().updateImage();
@@ -141,14 +150,36 @@ public class PersonalVehicle extends Vehicle implements Serializable {
 			e.printStackTrace();
 		}
 		this.newLock.unlock();
-		
+
 		return 0;
-		
+
 	}
 
 	@Override
 	public String toString() {
-		return "CAR:: " +super.toString();
+		return "Vehicle Type: CAR" + System.lineSeparator() + super.toString();
 	}
-	
+
+	@Override
+	public void createPassengers() {
+		/**
+		 * Create passengers
+		 */
+		List<Passenger> passengers = new ArrayList<>();
+		Random rand = new Random();
+		int passengerCount = 1 + (int) (rand.nextDouble() * (this.getCapacity() - 1));
+		/**
+		 * Create driver
+		 */
+		DriverPassenger driver = new DriverPassenger();
+		driver.setVehicle(this);
+		passengers.add(driver);
+
+		for (int i = 1; i < passengerCount; i++) {
+			passengers.add(new Passenger());
+		}
+		this.setPassengers(passengers);
+
+	}
+
 }

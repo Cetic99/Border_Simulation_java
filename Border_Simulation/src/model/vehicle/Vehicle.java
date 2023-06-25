@@ -4,9 +4,6 @@ import java.util.List;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 
-import java.util.Random;
-
-import model.passenger.BusPassenger;
 import model.passenger.DriverPassenger;
 import model.passenger.Passenger;
 import model.position.CarBusCustomsTerminal;
@@ -15,14 +12,17 @@ import model.position.LinePosition;
 import model.position.Position;
 import model.position.TruckCustomsTerminal;
 import model.position.TruckPoliceTerminal;
+import view.Main;
 import view.MainController;
 
 import java.util.concurrent.locks.*;
 import java.util.function.Consumer;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Vehicle extends Task<Position> {
+public abstract class Vehicle extends Task<Position> implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	public static boolean RUN = true;
 	/*
 	 * Stores passengers in Vehicle
@@ -35,10 +35,10 @@ public abstract class Vehicle extends Task<Position> {
 	/*
 	 * Stores image that will be shown on GUI
 	 */
-	private Image image = null;
-	private Image didntPassImage = null;
-	private Image passedImage = null;
-	private Image incidentImage = null;
+	private transient Image image = null;
+	private transient Image didntPassImage = null;
+	private transient Image passedImage = null;
+	private transient Image incidentImage = null;
 	
 
 	/*
@@ -77,7 +77,15 @@ public abstract class Vehicle extends Task<Position> {
 	private boolean moving = true;
 	private List<String> incidentStatus = new ArrayList<String>();
 	
+	
+	/*
+	 * For stopping timer
+	 */
+	private boolean finish = false;
 
+	{
+		incidentStatus.add(System.lineSeparator() + "=======================" + System.lineSeparator() + "Incidents:");
+	}
 
 	/*----------------- Constructors --------------------*/
 	public Vehicle(List<? extends Passenger> passengers) {
@@ -90,30 +98,8 @@ public abstract class Vehicle extends Task<Position> {
 	
 	/*---------------------------------------------------*/
 
-	public void createPassengers() {
-		/**
-		 * Create passengers
-		 */
-		List<Passenger> passengers = new ArrayList<>();
-		Random rand = new Random();
-		int passengerCount = 1 + (int) (rand.nextDouble() * (this.getCapacity() - 1));
-		/**
-		 * Create driver
-		 */
-		DriverPassenger driver = new DriverPassenger();
-		driver.setVehicle(this);
-		passengers.add(driver);
-		if (this instanceof BusVehicle) {
-			for (int i = 1; i < passengerCount; i++) {
-				passengers.add(new BusPassenger());
-			}
-		} else {
-			for (int i = 1; i < passengerCount; i++) {
-				passengers.add(new Passenger());
-			}
-		}
-		this.setPassengers(passengers);
-	}
+	public abstract void createPassengers();
+	
 
 	/*
 	 * Thread method
@@ -143,10 +129,12 @@ public abstract class Vehicle extends Task<Position> {
 			}
 			
 			moveForward(null);
-			this.oldLock.unlock();
-			this.newLock.unlock();
 			
 			this.setMoving(false);
+			
+			if(isFinish()) {
+				MainController.timeline.stop();
+			}
 
 		return this.getCurrentPosition();
 	}
@@ -400,11 +388,11 @@ public abstract class Vehicle extends Task<Position> {
 			if(p instanceof DriverPassenger) {
 				driverName = p.toString();
 			}else {
-				otherPassengers = otherPassengers + ", " + p.toString();
+				otherPassengers = otherPassengers + System.lineSeparator() + "                  " +p.toString();
 			}
 		}
-		retString = "Drivers name: " + driverName + 
-				", Passengers names: " + otherPassengers;
+		retString = "Drivers name: " + driverName + System.lineSeparator()+
+				"Passengers names: " + otherPassengers;
 		
 		return retString;
 	}
@@ -521,6 +509,27 @@ public abstract class Vehicle extends Task<Position> {
 	 */
 	public void setCrossedBorder(boolean crossedBorder) {
 		this.crossedBorder = crossedBorder;
+	}
+	
+	public List<String> getRelevantInfo(){
+		List<String> str = new ArrayList<>();
+		str.add(this.toString());
+		str.addAll(this.getIncidentStatus());
+		return str;
+	}
+
+	/**
+	 * @return the finish
+	 */
+	public boolean isFinish() {
+		return finish;
+	}
+
+	/**
+	 * @param finish the finish to set
+	 */
+	public void setFinish(boolean finish) {
+		this.finish = finish;
 	}
 
 }

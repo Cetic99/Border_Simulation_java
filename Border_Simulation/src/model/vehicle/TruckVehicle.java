@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -39,7 +40,7 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		this.setImage(new Image(IMAGE_PATH));
 		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
 		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
-		this.setDidntPassImage(new Image(IMAGE_INCIDENT_PATH));
+		this.setIncidentImage(new Image(IMAGE_INCIDENT_PATH));
 		
 		this.setCtTime(500);
 		this.setPtTime(500);
@@ -56,7 +57,7 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		this.setImage(new Image(IMAGE_PATH));
 		this.setPassedImage(new Image(IMAGE_PASSED_PATH));
 		this.setDidntPassImage(new Image(IMAGE_DIDNT_PASS_PATH));
-		this.setDidntPassImage(new Image(IMAGE_INCIDENT_PATH));
+		this.setIncidentImage(new Image(IMAGE_INCIDENT_PATH));
 		
 		this.setCtTime(500);
 		this.setPtTime(500);
@@ -244,11 +245,36 @@ public class TruckVehicle extends Vehicle implements Serializable{
 		declaredWeight = Double.toString(getDeclaredWeight());
 		realWeight = Double.toString(getRealWeight());
 		
-		retString = "TRUCK:: " +passengers + 
-				"DeclaredWeight: " + declaredWeight + 
-				",RealWeight: "+ realWeight;
+		retString = "Vehicle Type: TRUCK"+ System.lineSeparator()
+		+ passengers
+		+ System.lineSeparator()
+		+ "Declared Weight: " + declaredWeight
+		+ System.lineSeparator() 
+		+ "Real Weight:     " + realWeight;
 		
 		return retString;
+	}
+
+	@Override
+	public void createPassengers() {
+		/**
+		 * Create passengers
+		 */
+		List<Passenger> passengers = new ArrayList<>();
+		Random rand = new Random();
+		int passengerCount = 1 + (int) (rand.nextDouble() * (this.getCapacity() - 1));
+		/**
+		 * Create driver
+		 */
+		DriverPassenger driver = new DriverPassenger();
+		driver.setVehicle(this);
+		passengers.add(driver);
+		
+			for (int i = 1; i < passengerCount; i++) {
+				passengers.add(new Passenger());
+			}
+		this.setPassengers(passengers);
+		
 	}
 
 

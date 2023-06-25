@@ -1,5 +1,9 @@
 package model.position;
 
-public class TruckCustomsTerminal extends CustomsTerminal{
+import java.io.Serializable;
+
+public class TruckCustomsTerminal extends CustomsTerminal implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 }

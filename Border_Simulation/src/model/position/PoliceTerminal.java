@@ -1,5 +1,9 @@
 package model.position;
 
-public abstract class PoliceTerminal extends BorderTerminal{
+import java.io.Serializable;
+
+public abstract class PoliceTerminal extends BorderTerminal implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 }

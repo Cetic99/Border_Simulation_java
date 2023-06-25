@@ -4,13 +4,15 @@ import javafx.scene.image.ImageView;
 import model.vehicle.Vehicle;
 import view.Main;
 
+import java.io.Serializable;
 import java.util.concurrent.locks.*;
 
-public class Position {
+public class Position implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private boolean taken = false;
 	private Vehicle vehicle;
-	private ImageView imView;
+	private transient ImageView imView;
 	private Lock lock = new ReentrantLock();
 
 	public void takePosition(Vehicle v) {

@@ -312,10 +312,15 @@ public class Border extends Task<Position> implements Serializable{
 				break;
 			}
 			if(this.linePositions.get(0).isTaken() == false) {
-				Thread t = new Thread(this.vehicles.poll());
+				Vehicle v = this.vehicles.poll();
+				if(this.vehicles.isEmpty()) {
+					v.setFinish(true);
+				}
+				Thread t = new Thread(v);
 				t.setPriority(3);
 				t.setDaemon(true);
 				t.start();
+				
 			}
 			Thread.sleep(100);
 		}

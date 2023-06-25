@@ -2,13 +2,19 @@ package view;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-
+import javafx.stage.Stage;
 import model.vehicle.*;
 
 public class AllVehicles implements Initializable{
@@ -17,10 +23,14 @@ public class AllVehicles implements Initializable{
     private GridPane grid;
     
     private List<Vehicle> vehicles;
+    Map<ImageView,Vehicle> map = new HashMap<>();
 
+    private RelevantInfo rInfo;
+    private Stage stage;
+    
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-
+		
 	}
 	
 
@@ -36,6 +46,31 @@ public class AllVehicles implements Initializable{
 	 */
 	public synchronized void setVehicles(List<Vehicle> vehicles) {
 		this.vehicles = vehicles;
+		/**
+		 * Event handlers
+		 */
+		for(int i = 0; i< 50; i++) {
+			ImageView iv = (ImageView)grid.getChildren().get(i);
+			map.put(iv, vehicles.get(i));
+			iv.setOnMouseClicked(e -> {
+				try {
+					
+						FXMLLoader loader = new FXMLLoader();
+						Parent root = loader.load(getClass().getResourceAsStream("RelevantInfo.fxml"));
+						rInfo = loader.getController();
+						rInfo.setText(map.get(iv).getRelevantInfo());
+						stage = new Stage();
+
+						Scene scene = new Scene(root);
+						stage.setScene(scene);
+						stage.show();
+
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			});
+		}
 		for(int i = 0; i< 50;i++) {
 			ImageView iv = (ImageView)grid.getChildren().get(i);
 			Vehicle v = vehicles.get(i);
